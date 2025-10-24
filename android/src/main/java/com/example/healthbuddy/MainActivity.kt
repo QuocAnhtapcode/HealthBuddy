@@ -1,7 +1,6 @@
 package com.example.healthbuddy
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -9,6 +8,7 @@ import androidx.activity.viewModels
 import com.example.healthbuddy.ui.theme.HealthBuddyTheme
 import com.google.android.gms.wearable.Wearable
 import androidx.lifecycle.lifecycleScope
+import com.example.healthbuddy.screens.MainApp
 import com.example.healthbuddy.screens.test.TestScreen
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -22,7 +22,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             HealthBuddyTheme {
-                TestScreen(phoneViewModel)
+                //TestScreen(phoneViewModel)
+                MainApp()
             }
         }
     }

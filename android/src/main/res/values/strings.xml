@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Android</string>
+    <string name="login_screen">Login screen</string>
+    <string name="register_screen">Register screen</string>
+    <string name="forgot_password">Forgot password</string>
+    <string name="reset_password">Reset password</string>
+    <string name="welcome_screen">Welcome screen</string>
 </resources>
