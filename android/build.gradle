@@ -64,4 +64,8 @@ dependencies {
 
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.navigation.compose.v295)
+
+  // Hilt
+  implementation libs.hilt.navigation.compose
+  implementation libs.dagger.hilt.android
 }
