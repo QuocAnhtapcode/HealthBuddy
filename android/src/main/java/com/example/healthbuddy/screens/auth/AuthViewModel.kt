@@ -51,6 +51,12 @@ constructor(
             Log.d("AuthVM", "login() done, error=${result.exceptionOrNull()?.message}")
         }
     }
+    fun signUp(username: String, email: String, password: String){
+        viewModelScope.launch {
+            val result = repo.signUp(username, email, password)
+            Log.d("AuthVM", "signUp() done, error=${result.exceptionOrNull()?.message}")
+        }
+    }
     fun logout() {
         viewModelScope.launch {
             repo.logout()

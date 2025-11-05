@@ -87,7 +87,12 @@ fun MainApp(
                     onLogin = {
                         navController.navigate(Screens.Login.name)
                     },
-                    onRegister = { name, emailOrPhone, password ->
+                    onRegister = { username, email, password ->
+                        authViewModel.signUp(
+                            username = username,
+                            email,
+                            password
+                        )
                         navController.navigate(Screens.Login.name) {
                             popUpTo(Screens.Welcome.name) { inclusive = true }
                         }
@@ -125,10 +130,12 @@ fun MainApp(
             composable(route = Screens.SetUp.name) {
                 SetUpScreen(
                     onBack = {
-                        navController.popBackStack()
                     },
                     onNext = {
-                        navController.navigate(Screens.Gender.name)
+                        authViewModel.logout()
+                        navController.navigate(Screens.Login.name){
+                            popUpTo(Screens.SetUp.name) { inclusive = true }
+                        }
                     }
                 )
             }

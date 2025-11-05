@@ -20,6 +20,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -128,11 +130,11 @@ fun RegisterScreen(
                     .background(LavenderBand)
                     .padding(horizontal = 20.dp, vertical = 20.dp)
             ) {
-                FieldLabel("Full name")
+                FieldLabel("Username")
                 TextField(
                     value = fullName,
                     onValueChange = { fullName = it },
-                    placeholder = { Text("example@example.com") },
+                    placeholder = { Text("Your username") },
                     singleLine = true,
                     shape = RoundedCornerShape(22.dp),
                     colors = tfColors(),
@@ -142,11 +144,11 @@ fun RegisterScreen(
                 )
 
                 Spacer(Modifier.height(16.dp))
-                FieldLabel("Email or Mobile Number")
+                FieldLabel("Email")
                 TextField(
                     value = emailOrPhone,
                     onValueChange = { emailOrPhone = it },
-                    placeholder = { Text("+123 567 89000") },
+                    placeholder = { Text("example@example.com") },
                     singleLine = true,
                     shape = RoundedCornerShape(22.dp),
                     colors = tfColors(),

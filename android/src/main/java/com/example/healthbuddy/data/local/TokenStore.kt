@@ -24,9 +24,9 @@ class TokenStore @Inject constructor(@ApplicationContext private val context: Co
             preferences[KEY_TOKEN]
         }
 
-    suspend fun saveToken(token: String) {
+    suspend fun saveToken(token: String?) {
         context.dataStore.edit { preferences ->
-            preferences[KEY_TOKEN] = token
+            preferences[KEY_TOKEN] = token?:""
         }
     }
 
