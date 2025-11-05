@@ -1,4 +1,4 @@
-package com.example.healthbuddy
+package com.example.healthbuddy.screens.test
 
 import android.app.Application
 import android.util.Log
@@ -13,6 +13,7 @@ import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.Wearable
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 

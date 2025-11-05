@@ -19,6 +19,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -56,6 +58,7 @@ import com.example.healthbuddy.ui.theme.TextSecondary
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
+    uiState: AuthUiState,
     onBack: () -> Unit,
     onForgotPassword: () -> Unit,
     onLogin: (email: String, password: String) -> Unit = { _, _ -> },
@@ -64,6 +67,15 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+
+    if (uiState.isLoading) {
+        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+    }
+
+    uiState.error?.let { err ->
+        Text(text = err, color = MaterialTheme.colorScheme.error)
+        Spacer(Modifier.height(8.dp))
+    }
 
     Scaffold(
         containerColor = BackgroundDark,
@@ -214,7 +226,8 @@ fun LoginScreen(
                     .padding(horizontal = 24.dp)
                     .fillMaxWidth()
                     .height(56.dp)
-                    .shadow(8.dp, RoundedCornerShape(28.dp), clip = false)
+                    .shadow(8.dp, RoundedCornerShape(28.dp),
+                clip = false)
             ) {
                 Text("Log In", color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
@@ -282,6 +295,7 @@ fun LoginScreen(
 @Composable
 private fun LoginPreview() {
     LoginScreen(
+        uiState = AuthUiState(),
         onBack = {},
         onForgotPassword = {},
         onSignUp = {}

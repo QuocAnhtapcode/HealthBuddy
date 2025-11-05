@@ -4,7 +4,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.example.healthbuddy.PhoneViewModel
+import com.example.healthbuddy.screens.test.PhoneViewModel
 
 @Composable
 fun TestScreen(viewModel: PhoneViewModel) {

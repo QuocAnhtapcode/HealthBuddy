@@ -5,11 +5,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.healthbuddy.screens.auth.AuthViewModel
 import com.example.healthbuddy.screens.auth.ForgotPasswordScreen
 import com.example.healthbuddy.screens.auth.LoginScreen
 import com.example.healthbuddy.screens.auth.RegisterScreen
@@ -21,23 +26,29 @@ import com.example.healthbuddy.screens.setup.SetUpScreen
 import com.example.healthbuddy.screens.setup.WeightScreen
 import com.example.healthbuddy.screens.wellcome.WelcomeScreen
 
-enum class Screens() {
-    Welcome(),
-    Login(),
-    Register(),
-    ForgotPassword(),
-    ResetPassword(),
-    SetUp(),
-    Gender(),
-    Age(),
-    Weight(),
-    Height()
+enum class Screens {
+    Welcome,
+
+    // Auth
+    Login, Register, ForgotPassword, ResetPassword, SetUp, Gender, Age, Weight, Height,
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainApp(){
+fun MainApp(
+    authViewModel: AuthViewModel = hiltViewModel()
+){
     val navController: NavHostController = rememberNavController()
+    val authUiState by authViewModel.ui.collectAsState()
+
+    LaunchedEffect(authUiState.isLoggedIn) {
+        if (authUiState.isLoggedIn) {
+            navController.navigate(Screens.SetUp.name) {
+                popUpTo(Screens.Welcome.name) { inclusive = true }
+                launchSingleTop = true
+            }
+        }
+    }
     Scaffold { innerPadding ->
         NavHost(
             navController = navController,
@@ -53,6 +64,7 @@ fun MainApp(){
             }
             composable(route = Screens.Login.name) {
                 LoginScreen(
+                    uiState = authUiState,
                     onBack = {
                         navController.popBackStack()
                     },
@@ -60,11 +72,7 @@ fun MainApp(){
                         navController.navigate(Screens.ForgotPassword.name)
                     },
                     onLogin = { email, password ->
-                        Log.d("Login email",email)
-                        Log.d("Login password",password)
-                        navController.navigate(Screens.SetUp.name) {
-                            popUpTo(Screens.Welcome.name) { inclusive = true }
-                        }
+                        authViewModel.login(email, password)
                     },
                     onSignUp = {
                         navController.navigate(Screens.Register.name)

@@ -5,35 +5,36 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import com.example.healthbuddy.ui.theme.HealthBuddyTheme
-import com.google.android.gms.wearable.Wearable
 import androidx.lifecycle.lifecycleScope
 import com.example.healthbuddy.screens.MainApp
-import com.example.healthbuddy.screens.test.TestScreen
+import com.example.healthbuddy.screens.auth.AuthViewModel
+import com.example.healthbuddy.ui.theme.HealthBuddyTheme
+import com.google.android.gms.wearable.Wearable
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val phoneViewModel by viewModels<PhoneViewModel>()
-
+    //private val phoneViewModel by viewModels<PhoneViewModel>()
+    private val authViewModel by viewModels<AuthViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             HealthBuddyTheme {
-                //TestScreen(phoneViewModel)
-                MainApp()
+                MainApp(authViewModel)
             }
         }
     }
 
     override fun onStart() {
         super.onStart()
-        phoneViewModel.start()
+        //phoneViewModel.start()
     }
     override fun onStop() {
-        phoneViewModel.stop()
+        //phoneViewModel.stop()
         super.onStop()
     }
 

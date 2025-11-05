@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.compose)
+    alias(libs.plugins.ksp)
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -33,6 +35,11 @@ android {
     }
     buildFeatures {
         compose true
+    }
+    packaging {
+      resources {
+        pickFirsts += ["META-INF/versions/9/OSGI-INF/MANIFEST.MF"]
+      }
     }
 }
 
@@ -68,4 +75,20 @@ dependencies {
   // Hilt
   implementation libs.hilt.navigation.compose
   implementation libs.dagger.hilt.android
+  ksp(libs.hilt.compiler)
+
+  // Preferences DataStore
+  implementation "androidx.datastore:datastore-preferences:1.1.7"
+
+ // Proto DataStore
+  implementation  "androidx.datastore:datastore-core:1.1.7"
+
+  // Retrofit/OkHttp
+  implementation("com.squareup.retrofit2:retrofit:2.11.0")
+  implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
+  implementation("com.squareup.okhttp3:okhttp:5.3.0")
+  implementation("com.squareup.okhttp3:logging-interceptor:5.3.0")
+
+  implementation("com.squareup.moshi:moshi-kotlin:1.15.2")
+  ksp("com.squareup.moshi:moshi-kotlin-codegen:1.15.2")
 }
