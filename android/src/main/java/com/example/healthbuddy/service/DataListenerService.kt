@@ -41,11 +41,11 @@ class DataListenerService: WearableListenerService() {
                 event.dataItem.uri.path == DataPaths.EXERCISE_PATH
             ) {
                 val dataMap = DataMapItem.fromDataItem(event.dataItem).dataMap
-                val avgHr = dataMap.getInt("averageHeartRate")
-                val distance = dataMap.getInt("totalDistance")
-                val calories = dataMap.getInt("totalCalories")
-                val duration = dataMap.getLong("duration")
-                val timeStamp = dataMap.getLong("timestamp")
+                dataMap.getInt("averageHeartRate")
+                dataMap.getInt("totalDistance")
+                dataMap.getInt("totalCalories")
+                dataMap.getLong("duration")
+                dataMap.getLong("timestamp")
 
                 //Do something with the data here ( Push to server )
             }

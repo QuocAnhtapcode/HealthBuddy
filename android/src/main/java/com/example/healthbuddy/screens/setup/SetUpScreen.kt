@@ -101,7 +101,7 @@ fun SetUpScreen(
                 Text(
                     text = "Set up your profile",
                     color = TextPrimary,
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
             }

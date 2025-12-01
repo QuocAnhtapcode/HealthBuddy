@@ -305,7 +305,7 @@ private fun TermsParagraph(
     onTerms: (() -> Unit)?,
     onPrivacy: (() -> Unit)?
 ) {
-    val uri = LocalUriHandler.current
+    LocalUriHandler.current
     val annotated = buildAnnotatedString {
         withStyle(SpanStyle(color = TextSecondary)) {
             append("By continuing, you agree to ")

@@ -36,20 +36,15 @@ fun HeightScreen(
     onBack: (() -> Unit)? = null,
     onContinue: (heightCm: Int) -> Unit = {}
 ) {
-    // 140..210 cm, change if you want a different range
     val heights = (140..210).toList()
 
-    // We'll treat each row in the ruler list as a fixed height.
     val rowHeightDp = 24.dp
     val rowHeightPx = with(LocalDensity.current) { rowHeightDp.toPx() }
 
-    // Start around 165cm-ish
+    // Start around 165cm
     val startIndex = heights.indexOf(165).coerceAtLeast(0)
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = (startIndex - 5).coerceAtLeast(0))
 
-    // We pick which entry in the scroll is "centered".
-    // The lime marker is visually around the middle of the purple ruler box,
-    // so we add an offset (tune +5 to match where that line sits vertically inside the box).
     val selectedIndex by remember {
         derivedStateOf {
             val base = listState.firstVisibleItemIndex
@@ -254,7 +249,7 @@ fun HeightScreen(
                         )
                         Spacer(Modifier.width(6.dp))
                         Icon(
-                            painter = painterResource(R.drawable.ic_arrow_right),
+                            painter = painterResource(R.drawable.ic_arrow_left),
                             contentDescription = null,
                             tint = AccentLime,
                             modifier = Modifier.size(16.dp)

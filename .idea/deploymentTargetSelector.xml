@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="android">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-10-25T05:54:09.276948300Z">
+        <DropdownSelection timestamp="2025-11-25T08:36:13.936680Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Admin\.android\avd\Resizable.avd" />
@@ -15,10 +15,10 @@
       </SelectionState>
       <SelectionState runConfigName="WearOS">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-10-25T05:54:05.899108600Z">
+        <DropdownSelection timestamp="2025-11-24T04:35:27.046004900Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\Admin\.android\avd\Resizable.avd" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=RF8R60PFL9D" />
             </handle>
           </Target>
         </DropdownSelection>

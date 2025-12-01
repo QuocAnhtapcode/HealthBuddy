@@ -3,7 +3,10 @@ package com.example.healthbuddy.screens.auth
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.healthbuddy.data.AuthRepository
+import com.example.healthbuddy.data.model.SignUpRequest
+import com.example.healthbuddy.data.model.User
+import com.example.healthbuddy.data.repo.AuthRepository
+import com.example.healthbuddy.data.repo.UserInfoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,25 +18,26 @@ data class AuthUiState(
     val isLoggedIn: Boolean = false,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val token: String? = null
+    val user: User? = null
 )
 @HiltViewModel
 class AuthViewModel
 @Inject
 constructor(
-    private val repo: AuthRepository
+    private val authRepo: AuthRepository,
+    private val userRepo: UserInfoRepository,
 ): ViewModel(){
-
     private val _ui = MutableStateFlow(AuthUiState())
     val ui: StateFlow<AuthUiState> = _ui
+
     init {
         viewModelScope.launch {
-            repo.tokenFlow.collect { token ->
-                val realToken = token.takeIf { !it.isNullOrBlank() }
+            authRepo.tokenFlow.collect { token ->
+                val user = userRepo.getUser()
                 _ui.update {
                     it.copy(
-                        isLoggedIn = realToken != null,
-                        token = realToken
+                        isLoggedIn = user.isSuccess,
+                        user = user.getOrNull()
                     )
                 }
             }
@@ -42,7 +46,7 @@ constructor(
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _ui.update { it.copy(isLoading = true, error = null) }
-            val result = repo.login(email, password)
+            val result = authRepo.login(email, password)
             _ui.update { s ->
                 s.copy(isLoading = false,
                     error = result.exceptionOrNull()?.message
@@ -51,15 +55,15 @@ constructor(
             Log.d("AuthVM", "login() done, error=${result.exceptionOrNull()?.message}")
         }
     }
-    fun signUp(username: String, email: String, password: String){
+    fun signUp(signUpRequest: SignUpRequest){
         viewModelScope.launch {
-            val result = repo.signUp(username, email, password)
+            val result = authRepo.signUp(signUpRequest)
             Log.d("AuthVM", "signUp() done, error=${result.exceptionOrNull()?.message}")
         }
     }
     fun logout() {
         viewModelScope.launch {
-            repo.logout()
+            authRepo.logout()
             _ui.update { AuthUiState() }
         }
     }
