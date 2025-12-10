@@ -52,7 +52,7 @@ import com.example.healthbuddy.ui.theme.TextSecondary
 fun Avatar(avatarUrl: String?, size: Dp) {
     if (avatarUrl.isNullOrBlank()) {
         Image(
-            painter = painterResource(R.drawable.ic_loading),
+            painter = painterResource(R.drawable.ic_avatar),
             contentDescription = null,
             modifier = Modifier
                 .size(size)

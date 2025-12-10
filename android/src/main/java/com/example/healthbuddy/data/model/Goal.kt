@@ -15,3 +15,11 @@ data class Goal(
     val description: String? = null,
     val plans: List<Plan> = emptyList()
 )
+
+@JsonClass(generateAdapter = true)
+data class GoalWithPlans(
+    val id: Int,
+    val name: String,
+    val description: String,
+    val plans: List<Plan>
+)

@@ -71,7 +71,6 @@ fun EditMealRecipeScreen(
     val ui by vm.ui.collectAsState()
     val editing = ui.editingMealRecipe
 
-    // Nếu không có gì để edit thì tự back ra
     if (editing == null) {
         LaunchedEffect(Unit) { onBack() }
         return
@@ -117,19 +116,18 @@ fun EditMealRecipeScreen(
 
             Spacer(Modifier.height(8.dp))
 
-            // List nguyên liệu
             LazyColumn(
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 16.dp)
             ) {
-                items(ingredients, key = { it.id }) { mri ->
+                items(ingredients, key = { it.id }) { mealRecipeIngredient ->
                     IngredientEditRow(
-                        ingredient = mri,
-                        onChangeQuantity = { newQty ->
+                        mealRecipeIngredient = mealRecipeIngredient,
+                        onQuantityChange = { newQuantity ->
                             vm.updateIngredientQuantity(
-                                ingredientId = mri.ingredient.id,
-                                newQuantity = newQty
+                                ingredientId = mealRecipeIngredient.ingredient.id,
+                                newQuantity = newQuantity
                             )
                         }
                     )
@@ -139,11 +137,9 @@ fun EditMealRecipeScreen(
                 item { Spacer(Modifier.height(8.dp)) }
             }
 
-            // Nút Save
             Button(
                 onClick = {
-                    vm.saveEditedMealRecipe()
-                    onBack()
+                    vm.saveEditedMealRecipe(onDone = onBack)
                 },
                 enabled = !ui.loadingEdit,
                 modifier = Modifier
@@ -207,10 +203,10 @@ private fun RecipeHeader(mealRecipe: MealRecipe) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            MacroChip(label = "Calories", value = mealRecipe.calories, unit = "kcal")
-            MacroChip(label = "Protein",  value = mealRecipe.protein,  unit = "g")
-            MacroChip(label = "Carbs",    value = mealRecipe.carbs,    unit = "g")
-            MacroChip(label = "Fat",      value = mealRecipe.fat,      unit = "g")
+            MacroChip(label = "Calories",value = mealRecipe.calories, unit = "kcal")
+            MacroChip(label = "Protein",value = mealRecipe.protein,  unit = "g")
+            MacroChip(label = "Carbs",value = mealRecipe.carbs,    unit = "g")
+            MacroChip(label = "Fat",value = mealRecipe.fat,      unit = "g")
         }
     }
 }
@@ -237,24 +233,9 @@ private fun MacroChip(
 }
 @Composable
 fun IngredientEditRow(
-    ingredient: MealRecipeIngredient,
-    onChangeQuantity: (Float) -> Unit
+    mealRecipeIngredient: MealRecipeIngredient,
+    onQuantityChange: (Float) -> Unit
 ) {
-    var text by remember(ingredient.id) {
-        mutableStateOf(
-            if (ingredient.quantity == 0f) "" else ingredient.quantity.toInt().toString()
-        )
-    }
-
-    // Tính macro dựa trên quantity hiện tại
-    val qty = ingredient.quantity
-    val perUnit = ingredient.ingredient
-
-    val calories = qty * perUnit.calories
-    val protein  = qty * perUnit.protein
-    val carbs    = qty * perUnit.carbs
-    val fat      = qty * perUnit.fat
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -265,7 +246,6 @@ fun IngredientEditRow(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Avatar / icon ingredient (tạm icon tròn)
             Box(
                 modifier = Modifier
                     .size(40.dp)
@@ -274,7 +254,7 @@ fun IngredientEditRow(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = ingredient.ingredient.name.firstOrNull()?.uppercase() ?: "",
+                    text = mealRecipeIngredient.ingredient.name.firstOrNull()?.uppercase() ?: "",
                     color = AccentLime,
                     fontWeight = FontWeight.Bold
                 )
@@ -286,12 +266,12 @@ fun IngredientEditRow(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = ingredient.ingredient.name,
+                    text = mealRecipeIngredient.ingredient.name,
                     color = TextPrimary,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.SemiBold
                 )
-                ingredient.ingredient.description?.let {
+                mealRecipeIngredient.ingredient.description?.let {
                     Text(
                         text = it,
                         color = TextSecondary,
@@ -302,27 +282,25 @@ fun IngredientEditRow(
             }
 
             QuantityPillField(
-                initial = ingredient.quantity,
-                onQuantityChange = { newQty ->
-                    onChangeQuantity(newQty)
-                }
+                initial = mealRecipeIngredient.quantity,
+                onQuantityChange = onQuantityChange
             )
         }
 
         Spacer(Modifier.height(8.dp))
 
-        // Macro row
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            MacroPill("Cal", calories)
-            MacroPill("P",   protein)
-            MacroPill("C",   carbs)
-            MacroPill("F",   fat)
+            MacroPill("Cal", mealRecipeIngredient.ingredient.calories)
+            MacroPill("P",   mealRecipeIngredient.ingredient.protein)
+            MacroPill("C",   mealRecipeIngredient.ingredient.carbs)
+            MacroPill("F",   mealRecipeIngredient.ingredient.fat)
         }
     }
 }
+
 
 @Composable
 private fun MacroPill(
@@ -350,7 +328,6 @@ private fun QuantityPillField(
     var text by remember(initial) {
         mutableStateOf(
             if (initial > 0f) {
-                // hiển thị nguyên số cho đẹp
                 if (initial % 1f == 0f) initial.toInt().toString() else initial.toString()
             } else ""
         )

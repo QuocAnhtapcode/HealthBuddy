@@ -56,7 +56,7 @@ fun ChoosePlanScreen(
     onBack: (() -> Unit)? = null,
     onContinue: (Plan) -> Unit = {}
 ) {
-    var selectedPlanId by remember { mutableStateOf<Int?>(null) }
+    var selectedPlanId by remember { mutableStateOf<Long?>(null) }
 
     Scaffold(
         containerColor = BackgroundDark,
@@ -247,7 +247,6 @@ private fun PlanCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 sessions
-                    .sortedBy { it.sessionOrder }
                     .forEach { s ->
                         DayChip(
                             day = s.sessionDayOfWeek,

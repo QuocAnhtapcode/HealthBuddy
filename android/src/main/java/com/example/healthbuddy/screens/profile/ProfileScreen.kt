@@ -41,7 +41,7 @@ fun ProfileOverviewScreen(
     avatarUrl: String? = null,
     onBack: (() -> Unit)? = null,
     onEditProfile: () -> Unit,
-    onOpenFavorites: () -> Unit,
+    onChooseNewPlan: () -> Unit,
     onOpenPrivacy: () -> Unit,
     onOpenSettings: () -> Unit,
     onOpenHelp: () -> Unit,
@@ -79,7 +79,6 @@ fun ProfileOverviewScreen(
                 .fillMaxSize()
                 .background(BackgroundDark)
         ) {
-            // ---------- HEADER BAND ----------
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -132,13 +131,13 @@ fun ProfileOverviewScreen(
                 Spacer(Modifier.height(8.dp))
                 MenuItem(
                     icon = R.drawable.ic_profile,
-                    label = "Edit profile",
+                    label = "Update health info",
                     onClick = onEditProfile
                 )
                 MenuItem(
                     icon = R.drawable.ic_star,
-                    label = "Favorites",
-                    onClick = onOpenFavorites
+                    label = "Choose new plan",
+                    onClick = onChooseNewPlan
                 )
                 MenuItem(
                     icon = R.drawable.ic_lock,

@@ -31,7 +31,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,9 +53,12 @@ import com.example.healthbuddy.data.model.Menu
 import com.example.healthbuddy.ui.theme.AccentLime
 import com.example.healthbuddy.ui.theme.BackgroundDark
 import com.example.healthbuddy.ui.theme.ButtonBg
+import com.example.healthbuddy.ui.theme.LavenderBand
 import com.example.healthbuddy.ui.theme.SurfaceDark
 import com.example.healthbuddy.ui.theme.TextPrimary
 import com.example.healthbuddy.ui.theme.TextSecondary
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 
 @Composable
@@ -63,87 +68,98 @@ fun MenuTodayScreen(
     onEditMealRecipe: (mealId: Long, mealRecipeId: Long) -> Unit
 ) {
     val ui by menuViewModel.ui.collectAsState()
+    var showPicker by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         menuViewModel.loadMenuForToday()
     }
 
-    when {
-        ui.loadingMenu -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(BackgroundDark),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = AccentLime)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(BackgroundDark)
+    ) {
+        when {
+            ui.loadingMenu -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = AccentLime)
+                }
             }
-        }
 
-        ui.error != null -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(BackgroundDark),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = ui.error ?: "Something went wrong",
-                        color = Color.Red,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Button(
-                        onClick = { menuViewModel.loadMenuForToday() },
-                        colors = ButtonDefaults.buttonColors(containerColor = ButtonBg),
-                        shape = RoundedCornerShape(20.dp)
-                    ) {
-                        Text("Retry", color = TextPrimary)
+            ui.error != null -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = ui.error ?: "Something went wrong",
+                            color = Color.Red,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Button(
+                            onClick = { menuViewModel.loadMenuForToday() },
+                            colors = ButtonDefaults.buttonColors(containerColor = ButtonBg),
+                            shape = RoundedCornerShape(20.dp)
+                        ) {
+                            Text("Retry", color = TextPrimary)
+                        }
                     }
                 }
             }
-        }
 
-        ui.menu == null -> {
-            // Trường hợp không có menu hôm nay
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(BackgroundDark),
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(
-                        text = "No menu for today yet",
-                        color = TextPrimary,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        text = "Start by adding your first meal.",
-                        color = TextSecondary,
-                        fontSize = 14.sp
-                    )
+            ui.menu == null -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "No menu for today yet",
+                            color = TextPrimary,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            text = "Start by adding your first meal.",
+                            color = TextSecondary,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
+            }
+
+            else -> {
+                val menu = ui.menu!!
+                TodayMenuContent(
+                    menu = menu,
+                    onAddMealClick = { showPicker = true },
+                    onOpenRecipePicker = onOpenRecipePicker,
+                    onEditMealRecipe = onEditMealRecipe
+                )
             }
         }
 
-        else -> {
-            val menu = ui.menu!!
-            TodayMenuContent(
-                menu = menu,
-                onOpenRecipePicker = onOpenRecipePicker,
-                onEditMealRecipe = onEditMealRecipe
-            )
-        }
+        MealTypePickerBottomSheet(
+            visible = showPicker,
+            onDismiss = { showPicker = false },
+            onSelect = { type ->
+                showPicker = false
+                menuViewModel.addMeal(type)
+            }
+        )
     }
 }
 
 @Composable
 private fun TodayMenuContent(
     menu: Menu,
+    onAddMealClick: () -> Unit,
     onOpenRecipePicker: (Meal) -> Unit,
     onEditMealRecipe: (mealId: Long, mealRecipeId: Long) -> Unit
 ) {
@@ -152,12 +168,13 @@ private fun TodayMenuContent(
             .fillMaxSize()
             .background(BackgroundDark)
     ) {
-        // ---------- HEADER: Today + summary ----------
-        TodayHeader(menu)
+        TodayHeader(
+            menu = menu,
+            onAddMealClick = { onAddMealClick() }
+        )
 
         Spacer(Modifier.height(8.dp))
 
-        // ---------- LIST MEALS ----------
         if (menu.meals.isEmpty()) {
             Box(
                 modifier = Modifier
@@ -165,7 +182,7 @@ private fun TodayMenuContent(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    "No meals yet. Add recipes to start tracking today.",
+                    "No meals yet. Tap \"Add meal\" to start.",
                     color = TextSecondary,
                     fontSize = 14.sp,
                     textAlign = TextAlign.Center,
@@ -192,10 +209,13 @@ private fun TodayMenuContent(
 }
 
 @Composable
-private fun TodayHeader(menu: Menu) {
+fun TodayHeader(
+    menu: Menu,
+    onAddMealClick: () -> Unit
+) {
     val today = remember {
-        java.time.LocalDate.now()
-            .format(java.time.format.DateTimeFormatter.ofPattern("EEEE, dd MMM"))
+        LocalDate.now()
+            .format(DateTimeFormatter.ofPattern("EEEE, dd MMM"))
     }
 
     Column(
@@ -203,18 +223,36 @@ private fun TodayHeader(menu: Menu) {
             .fillMaxWidth()
             .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 8.dp)
     ) {
-        Text(
-            text = "Today",
-            color = AccentLime,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text(
-            text = today,
-            color = TextPrimary,
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold
-        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Column {
+                Text(
+                    text = "Today",
+                    color = AccentLime,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = today,
+                    color = TextPrimary,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            Icon(
+                painter = painterResource(R.drawable.ic_add),
+                contentDescription = "Add meal",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(36.dp)
+                    .clickable{onAddMealClick()}
+            )
+        }
 
         Spacer(Modifier.height(16.dp))
 
@@ -222,12 +260,14 @@ private fun TodayHeader(menu: Menu) {
     }
 }
 
+
+
 @Composable
 private fun TodaySummaryCard(menu: Menu) {
     val target = menu.menuPlan.targetCalories
     val actual = menu.actualTotalCalories
     val ratioRaw = if (target > 0f) actual / target else 0f
-    val ratio = ratioRaw.coerceIn(0f, 1.3f)   // cho phép hơi vượt 1 tí để nhìn rõ
+    val ratio = ratioRaw.coerceIn(0f, 1.3f)
     val animatedRatio by animateFloatAsState(
         targetValue = ratio.coerceIn(0f, 1f),
         label = "calorieProgress"
@@ -237,14 +277,13 @@ private fun TodaySummaryCard(menu: Menu) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(22.dp))
-            .background(Color(0xFF403266))      // tím đậm giống screenshot
+            .background(LavenderBand)
             .padding(horizontal = 18.dp, vertical = 14.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            // ---- LEFT: Calories today ----
             Column {
                 Text(
                     text = "Calories today",
@@ -269,7 +308,6 @@ private fun TodaySummaryCard(menu: Menu) {
                 }
             }
 
-            // ---- RIGHT: macros ----
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -310,13 +348,13 @@ private fun MacroLine(
         modifier = Modifier.padding(8.dp)) {
         Text(
             text = label,
-            color = TextSecondary.copy(alpha = 0.9f),
-            fontSize = 11.sp
+            color = TextPrimary,
+            fontSize = 14.sp
         )
         Text(
             text = "${value.toInt()} g",
             color = TextPrimary,
-            fontSize = 13.sp,
+            fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold
         )
     }
@@ -401,13 +439,6 @@ private fun MealCard(
                     contentColor = AccentLime
                 )
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_star),
-                    contentDescription = "Add recipe",
-                    tint = AccentLime,
-                    modifier = Modifier.size(14.dp)
-                )
-                Spacer(Modifier.width(4.dp))
                 Text("Add recipe", fontSize = 12.sp)
             }
         }

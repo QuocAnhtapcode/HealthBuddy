@@ -1,5 +1,6 @@
 package com.example.healthbuddy.screens.menu
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.healthbuddy.data.model.Meal
@@ -37,6 +38,7 @@ class MenuViewModel @Inject constructor(
 
     private val _ui = MutableStateFlow(MenuUiState())
     val ui = _ui.asStateFlow()
+
     fun loadMenuForToday() {
         viewModelScope.launch {
             _ui.update { it.copy(loadingMenu = true, error = null) }
@@ -84,7 +86,6 @@ class MenuViewModel @Inject constructor(
         loadRecipesInternal(page = 0, reset = true)
     }
 
-    // load thêm page tiếp theo
     fun loadNextRecipePage() {
         val pageInfo = _ui.value.recipePage ?: return
         val isLastPage = pageInfo.number >= pageInfo.totalPages - 1
@@ -93,12 +94,10 @@ class MenuViewModel @Inject constructor(
         loadRecipesInternal(page = pageInfo.number + 1, reset = false)
     }
 
-    // cập nhật query khi user gõ search
     fun updateRecipeSearchQuery(newQuery: String) {
         _ui.update { it.copy(searchQuery = newQuery) }
     }
 
-    // user nhấn Search / Done → reload từ page 0
     fun searchRecipes() {
         loadRecipesInternal(page = 0, reset = true)
     }
@@ -138,7 +137,7 @@ class MenuViewModel @Inject constructor(
         }
     }
 
-    // --- 4) Add recipe vào 1 meal cụ thể ---
+    //Add recipe vào 1 meal cụ thể
     fun addRecipeToMeal(
         mealId: Long,
         recipeId: Long,
@@ -174,25 +173,36 @@ class MenuViewModel @Inject constructor(
         _ui.update { it.copy(editingMealRecipe = mealRecipe) }
     }
 
-    // --- 5) Update local quantity từng ingredient trước khi gửi lên server ---
+    //Update local quantity từng ingredient trước khi gửi lên server
     fun updateIngredientQuantity(ingredientId: Long, newQuantity: Float) {
-        val current = _ui.value.editingMealRecipe ?: return
+        val currentMealRecipe = _ui.value.editingMealRecipe ?: return
 
-        val newList = current.mealRecipeIngredients?.map { mri ->
-            if (mri.ingredient.id == ingredientId) mri.copy(quantity = newQuantity)
-            else mri
-        } ?: emptyList()
+        val updatedIngredients =
+            currentMealRecipe.mealRecipeIngredients?.map { mealRecipeIngredient ->
+                if (mealRecipeIngredient.ingredient.id == ingredientId) {
+                    mealRecipeIngredient.copy(quantity = newQuantity)
+                } else {
+                    mealRecipeIngredient
+                }
+            } ?: emptyList()
 
-        // Re-calc macro tổng từ các ingredient nếu bạn muốn
-        val newCalories = newList.sumOf { (it.quantity * it.ingredient.calories).toDouble() }.toFloat()
-        val newProtein  = newList.sumOf { (it.quantity * it.ingredient.protein).toDouble() }.toFloat()
-        val newCarbs    = newList.sumOf { (it.quantity * it.ingredient.carbs).toDouble() }.toFloat()
-        val newFat      = newList.sumOf { (it.quantity * it.ingredient.fat).toDouble() }.toFloat()
+        val newCalories = updatedIngredients
+            .sumOf { (it.quantity * it.ingredient.calories).toDouble() }
+            .toFloat()
+        val newProtein = updatedIngredients
+            .sumOf { (it.quantity * it.ingredient.protein).toDouble() }
+            .toFloat()
+        val newCarbs = updatedIngredients
+            .sumOf { (it.quantity * it.ingredient.carbs).toDouble() }
+            .toFloat()
+        val newFat = updatedIngredients
+            .sumOf { (it.quantity * it.ingredient.fat).toDouble() }
+            .toFloat()
 
         _ui.update {
             it.copy(
-                editingMealRecipe = current.copy(
-                    mealRecipeIngredients = newList,
+                editingMealRecipe = currentMealRecipe.copy(
+                    mealRecipeIngredients = updatedIngredients,
                     calories = newCalories,
                     protein = newProtein,
                     carbs = newCarbs,
@@ -201,6 +211,7 @@ class MenuViewModel @Inject constructor(
             )
         }
     }
+
 
     // --- 6) Gửi request updateMealRecipe lên backend ---
     fun saveEditedMealRecipe(onDone: () -> Unit = {}) {
@@ -213,6 +224,7 @@ class MenuViewModel @Inject constructor(
 
             // 1) Gửi từng request update quantity
             for (item in ingredients) {
+                Log.d("Edit quantity",item.id.toString()+" "+item.quantity.toString())
                 val result = repo.updateMealRecipe(item.id,item.quantity)
 
                 result.onFailure { e ->
@@ -235,7 +247,7 @@ class MenuViewModel @Inject constructor(
                         it.copy(
                             loadingEdit = false,
                             menu = newMenu,
-                            editingMealRecipe = null   // đóng mode edit
+                            editingMealRecipe = null
                         )
                     }
                     onDone()
@@ -248,6 +260,7 @@ class MenuViewModel @Inject constructor(
                         )
                     }
                 }
+            onDone()
         }
     }
 }

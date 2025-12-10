@@ -49,11 +49,11 @@ interface MenuApi {
     ): MealRecipe
 
     // 5) Update lại khối lượng nguyên liệu trong mealRecipe
-    @PUT("/meal-recipe-ingredients/{id}")
+    @PUT("meal-recipe-ingredients/{id}")
     suspend fun updateRecipeInMeal(
         @Path("id") id: Long,
         @Body editMealRecipeIngredientRequest: EditMealRecipeIngredientRequest
-    ): MealRecipe
+    ): MealRecipeIngredient
 }
 
 

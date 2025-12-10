@@ -47,6 +47,7 @@ import com.example.healthbuddy.data.model.HealthInfo
 import com.example.healthbuddy.data.model.HealthInfoRequest
 import com.example.healthbuddy.data.model.User
 import com.example.healthbuddy.screens.auth.AuthViewModel
+import com.example.healthbuddy.screens.goal.GoalViewModel
 import com.example.healthbuddy.screens.menu.EditMealRecipeScreen
 import com.example.healthbuddy.screens.profile.ProfileOverviewScreen
 import com.example.healthbuddy.screens.menu.MenuTodayScreen
@@ -55,7 +56,10 @@ import com.example.healthbuddy.screens.menu.RecipeDetailScreen
 import com.example.healthbuddy.screens.menu.RecipePickerScreen
 import com.example.healthbuddy.screens.profile.UpdateHealthInfoScreen
 import com.example.healthbuddy.screens.userinfo.UserInfoViewModel
-import com.example.healthbuddy.screens.workout.WorkoutPlanScreen
+import com.example.healthbuddy.screens.workout.AddExerciseScreen
+import com.example.healthbuddy.screens.workout.ExercisePickerScreen
+import com.example.healthbuddy.screens.workout.TodayWorkoutScreen
+import com.example.healthbuddy.screens.workout.WorkoutViewModel
 import com.example.healthbuddy.ui.theme.AccentLime
 import com.example.healthbuddy.ui.theme.BackgroundDark
 import com.example.healthbuddy.ui.theme.LavenderBand
@@ -64,7 +68,7 @@ import com.example.healthbuddy.ui.theme.TextSecondary
 
 sealed class Tab(val route: String, val label: String, val icon: Int) {
     data object Home      : Tab("home",      "Home",      R.drawable.ic_home)
-    data object Workout   : Tab("workout",   "Work out",  R.drawable.ic_workout)
+    data object Workout   : Tab("workout",   "Work out",  R.drawable.ic_dumbbell)
     data object Nutrition : Tab("nutrition", "Nutrition", R.drawable.ic_nutrition)
     data object Profile   : Tab("profile",   "Profile",   R.drawable.ic_profile)
 }
@@ -74,8 +78,10 @@ private val TABS = listOf(Tab.Home, Tab.Workout, Tab.Nutrition, Tab.Profile)
 @Composable
 fun MainScreenGraph(
     authViewModel: AuthViewModel,
+    goalViewModel: GoalViewModel,
     userInfoViewModel: UserInfoViewModel,
-    menuViewModel: MenuViewModel
+    menuViewModel: MenuViewModel,
+    workoutViewModel: WorkoutViewModel
 ) {
     val tabNav = rememberNavController()
     val backStack by tabNav.currentBackStackEntryAsState()
@@ -120,21 +126,47 @@ fun MainScreenGraph(
                 )
             }
 
-            /* ------- WORKOUT PLAN TAB -------- */
-            composable(Tab.Workout.route) {
-                userInfoViewModel.getUser()
-                val ui by userInfoViewModel.ui.collectAsState()
-                val activePlan = ui.user?.userPlans?.firstOrNull { it.status == "ACTIVE" }
+            /* ------- WORKOUT TAB -------- */
+            navigation(startDestination = "workout/today", route = Tab.Workout.route) {
 
-                if (activePlan != null) {
-                    WorkoutPlanScreen(
-                        userPlan = activePlan,
-                        onBack = { /* tab root -> không back */ }
+                composable("workout/today") {
+                    val userUi by userInfoViewModel.ui.collectAsState()
+                    val activityLevel = userUi.user?.activityLevel?.lowercase() ?:"beginner"
+
+                    TodayWorkoutScreen(
+                        viewModel = workoutViewModel,
+                        userActivityLevel = activityLevel,
+                        onOpenExercisePicker = {
+                            tabNav.navigate("workout/exercises")
+                        }
                     )
-                } else {
-                    EmptyStateScreen(
-                        title = "No workout plan yet",
-                        subtitle = "Choose a goal to get your training schedule."
+                }
+
+                composable("workout/exercises") {
+                    val userUi by userInfoViewModel.ui.collectAsState()
+                    val activityLevel = userUi.user?.activityLevel?.lowercase() ?:"beginner"
+
+                    ExercisePickerScreen(
+                        viewModel = workoutViewModel,
+                        userActivityLevel = activityLevel,
+                        onBack = { tabNav.popBackStack() },
+                        onExerciseSelected = { exerciseId ->
+                            tabNav.navigate("workout/add/$exerciseId")
+                        }
+                    )
+                }
+
+                composable("workout/add/{exerciseId}") { backStackEntry ->
+                    val id = backStackEntry.arguments?.getString("exerciseId")!!.toLong()
+                    AddExerciseScreen(
+                        viewModel = workoutViewModel,
+                        exerciseId = id,
+                        onBack = {
+                            tabNav.navigate("workout/today") {
+                                popUpTo("workout/today") { inclusive = false }
+                                launchSingleTop = true
+                            }
+                        }
                     )
                 }
             }
@@ -179,7 +211,12 @@ fun MainScreenGraph(
                         recipe = recipe,
                         vm = menuViewModel,
                         onBack = { tabNav.popBackStack() },
-                        onAdded = { tabNav.navigate("nutrition/menu") }
+                        onAdded = {
+                            tabNav.navigate("nutrition/menu") {
+                                popUpTo(0) { inclusive = true }     // XÓA TOÀN BỘ BACKSTACK
+                                launchSingleTop = true
+                            }
+                        }
                     )
                 }
 
@@ -206,7 +243,6 @@ fun MainScreenGraph(
                         ?.firstOrNull { it.id == mealRecipeId }
 
                     if (mealRecipe == null) {
-                        // nếu không tìm thấy (data chưa kịp load, v.v…) thì back ra
                         LaunchedEffect(Unit) { tabNav.popBackStack() }
                         return@composable
                     }
@@ -217,7 +253,12 @@ fun MainScreenGraph(
 
                     EditMealRecipeScreen(
                         vm = menuViewModel,
-                        onBack = { tabNav.popBackStack() }
+                        onBack = {
+                            tabNav.navigate("nutrition/menu") {
+                                popUpTo(0) { inclusive = true }     // XÓA TOÀN BỘ BACKSTACK
+                                launchSingleTop = true
+                            }
+                        }
                     )
                 }
             }
@@ -245,7 +286,9 @@ fun MainScreenGraph(
                                     route = "profile/edit"
                                 )
                             },
-                            onOpenFavorites = { },
+                            onChooseNewPlan = {
+
+                            },
                             onOpenPrivacy = { },
                             onOpenSettings = { },
                             onOpenHelp = { },

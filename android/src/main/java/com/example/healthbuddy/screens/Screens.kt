@@ -42,6 +42,7 @@ import com.example.healthbuddy.screens.setup.WeightScreen
 import com.example.healthbuddy.screens.userinfo.EntryRoute
 import com.example.healthbuddy.screens.userinfo.UserInfoViewModel
 import com.example.healthbuddy.screens.wellcome.WelcomeScreen
+import com.example.healthbuddy.screens.workout.WorkoutViewModel
 import java.time.LocalDate
 import java.time.Period
 
@@ -79,11 +80,11 @@ fun MainApp(
     userInfoViewModel: UserInfoViewModel = hiltViewModel(),
     quizViewModel: QuizViewModel = hiltViewModel(),
     goalViewModel: GoalViewModel = hiltViewModel(),
-    menuViewModel: MenuViewModel = hiltViewModel()
+    menuViewModel: MenuViewModel = hiltViewModel(),
+    workoutViewModel: WorkoutViewModel = hiltViewModel()
 ) {
     val nav = rememberNavController()
     val ui by authViewModel.ui.collectAsState()
-
     var signUpRequest by remember {
         mutableStateOf(
             SignUpRequest(
@@ -110,7 +111,7 @@ fun MainApp(
     // Nếu sau này ui.isLoggedIn true (do token), LaunchedEffect sẽ điều hướng tiếp
     val startDest = Graph.Auth
 
-    LaunchedEffect(ui.isLoggedIn) {
+    LaunchedEffect(ui.isLoggedIn,) {
 
         val currentRoute = nav.currentBackStackEntry?.destination?.route
 
@@ -368,8 +369,10 @@ fun MainApp(
                 composable("main/screen") {
                     MainScreenGraph(
                         authViewModel = authViewModel,
+                        goalViewModel = goalViewModel,
                         userInfoViewModel = userInfoViewModel,
-                        menuViewModel = menuViewModel
+                        menuViewModel = menuViewModel,
+                        workoutViewModel = workoutViewModel
                     )
                 }
             }
