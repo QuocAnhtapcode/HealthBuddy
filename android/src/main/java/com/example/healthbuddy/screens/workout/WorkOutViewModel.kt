@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import retrofit2.HttpException
 
 data class WorkoutUiState(
     val loadingSession: Boolean = false,
@@ -23,8 +24,10 @@ data class WorkoutUiState(
     val addingExercise: Boolean = false,
 
     val selectedExercise: Exercise? = null,
+    val isRestDay: Boolean = false,
     val error: String? = null
 )
+
 
 @HiltViewModel
 class WorkoutViewModel @Inject constructor(
@@ -37,52 +40,63 @@ class WorkoutViewModel @Inject constructor(
     // ---- 1) Load session hôm nay ----
     fun loadTodaySession() {
         viewModelScope.launch {
-            _ui.update { it.copy(loadingSession = true, error = null) }
+            _ui.update { it.copy(loadingSession = true, error = null, isRestDay = false) }
 
             repo.getTodaySession()
                 .onSuccess { session ->
                     _ui.update {
                         it.copy(
                             loadingSession = false,
-                            todaySession = session,
-                            error = null
+                            todaySession   = session,
+                            isRestDay      = false,
+                            error          = null
                         )
                     }
                 }
                 .onFailure { e ->
+                    // Nếu backend dùng 500 để thể hiện “rest day”
+                    val isRest = (e as? HttpException)?.code() == 500
+
                     _ui.update {
-                        it.copy(
-                            loadingSession = false,
-                            error = e.message ?: "Cannot load today's session"
-                        )
+                        if (isRest) {
+                            it.copy(
+                                loadingSession = false,
+                                todaySession   = null,
+                                isRestDay      = true,
+                                error          = null     // không coi là lỗi
+                            )
+                        } else {
+                            it.copy(
+                                loadingSession = false,
+                                error          = e.message ?: "Cannot load today's session",
+                                todaySession   = null,
+                                isRestDay      = false
+                            )
+                        }
                     }
                 }
         }
     }
 
-    // ---- 2) Load exercises theo planSession + activityLevel user ----
-    fun loadExercisesForToday(activityLevel: String) {
+    // ---- 2) Load exercises theo planSession + activityLevel user + muscle group ----
+    fun loadExercisesForToday(userLevel: String, groupId: Long) {
         val session = _ui.value.todaySession ?: return
-
-        val filter = ExerciseFilterRequest(
-            category = session.planSession.category,
-            activityLevel = activityLevel,
-            muscleGroups = session.planSession.muscleGroups.map {
-                MuscleGroupId(it.id)
-            }
-        )
-        Log.d("Filter",filter.toString())
 
         viewModelScope.launch {
             _ui.update { it.copy(loadingExercises = true, error = null) }
 
-            repo.getExerciseByFilter(filter)
+            repo.getExerciseByFilter(
+                category = session.planSession.category,
+                activityLevel = userLevel,
+                muscleGroup = groupId
+            )
                 .onSuccess { page ->
                     _ui.update {
                         it.copy(
                             loadingExercises = false,
                             exercises = page.content,
-                            exercisePage = page.page
+                            exercisePage = page.page,
+                            error = null
                         )
                     }
                 }
@@ -96,6 +110,7 @@ class WorkoutViewModel @Inject constructor(
                 }
         }
     }
+
 
     fun selectExercise(exercise: Exercise) {
         _ui.update { it.copy(selectedExercise = exercise) }

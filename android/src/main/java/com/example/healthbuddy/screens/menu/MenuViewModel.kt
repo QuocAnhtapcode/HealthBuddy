@@ -174,43 +174,32 @@ class MenuViewModel @Inject constructor(
     }
 
     //Update local quantity từng ingredient trước khi gửi lên server
-    fun updateIngredientQuantity(ingredientId: Long, newQuantity: Float) {
-        val currentMealRecipe = _ui.value.editingMealRecipe ?: return
+    fun updateIngredientQuantity(
+        ingredientId: Long,
+        newQuantity: Float
+    ) {
+        val current = _ui.value.editingMealRecipe ?: return
 
-        val updatedIngredients =
-            currentMealRecipe.mealRecipeIngredients?.map { mealRecipeIngredient ->
-                if (mealRecipeIngredient.ingredient.id == ingredientId) {
-                    mealRecipeIngredient.copy(quantity = newQuantity)
+        val updatedIngredients = current.mealRecipeIngredients
+            ?.map { ingredient ->
+                if (ingredient.ingredient.id == ingredientId) {
+                    ingredient.copy(quantity = newQuantity)
                 } else {
-                    mealRecipeIngredient
+                    ingredient
                 }
-            } ?: emptyList()
+            }
+            ?: emptyList()
 
-        val newCalories = updatedIngredients
-            .sumOf { (it.quantity * it.ingredient.calories).toDouble() }
-            .toFloat()
-        val newProtein = updatedIngredients
-            .sumOf { (it.quantity * it.ingredient.protein).toDouble() }
-            .toFloat()
-        val newCarbs = updatedIngredients
-            .sumOf { (it.quantity * it.ingredient.carbs).toDouble() }
-            .toFloat()
-        val newFat = updatedIngredients
-            .sumOf { (it.quantity * it.ingredient.fat).toDouble() }
-            .toFloat()
-
-        _ui.update {
-            it.copy(
-                editingMealRecipe = currentMealRecipe.copy(
-                    mealRecipeIngredients = updatedIngredients,
-                    calories = newCalories,
-                    protein = newProtein,
-                    carbs = newCarbs,
-                    fat = newFat
+        _ui.update { state ->
+            state.copy(
+                editingMealRecipe = current.copy(
+                    mealRecipeIngredients = updatedIngredients
+                    // KHÔNG thay đổi calories/protein/carb/fat ở đây
                 )
             )
         }
     }
+
 
 
     // --- 6) Gửi request updateMealRecipe lên backend ---

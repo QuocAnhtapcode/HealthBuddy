@@ -83,13 +83,6 @@ data class TodayWorkoutSession(
     val sessionExercises: List<SessionExercise>,
     val totalExerciseCalories: Float
 )
-// Body gửi lên /exercises
-@JsonClass(generateAdapter = true)
-data class ExerciseFilterRequest(
-    val category: String,
-    val activityLevel: String,
-    val muscleGroups: List<MuscleGroupId>
-)
 
 @JsonClass(generateAdapter = true)
 data class MuscleGroupId(

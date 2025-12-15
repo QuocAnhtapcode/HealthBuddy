@@ -1,8 +1,21 @@
 package com.example.healthbuddy.screens
 
 import android.util.Log
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,13 +26,23 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navigation
+import com.example.healthbuddy.R
 import com.example.healthbuddy.data.model.HealthInfoRequest
 import com.example.healthbuddy.data.model.SignUpRequest
 import com.example.healthbuddy.screens.auth.AuthViewModel
@@ -27,11 +50,17 @@ import com.example.healthbuddy.screens.auth.ForgotPasswordScreen
 import com.example.healthbuddy.screens.auth.LoginScreen
 import com.example.healthbuddy.screens.auth.RegisterScreen
 import com.example.healthbuddy.screens.auth.ResetPasswordScreen
-import com.example.healthbuddy.screens.setup.BirthdayScreen
 import com.example.healthbuddy.screens.goal.ChooseGoalScreen
 import com.example.healthbuddy.screens.goal.ChoosePlanScreen
 import com.example.healthbuddy.screens.goal.GoalViewModel
+import com.example.healthbuddy.screens.menu.EditMealRecipeScreen
+import com.example.healthbuddy.screens.menu.MenuTodayScreen
 import com.example.healthbuddy.screens.menu.MenuViewModel
+import com.example.healthbuddy.screens.menu.RecipeDetailScreen
+import com.example.healthbuddy.screens.menu.RecipePickerScreen
+import com.example.healthbuddy.screens.profile.ProfileOverviewScreen
+import com.example.healthbuddy.screens.profile.UpdateHealthInfoScreen
+import com.example.healthbuddy.screens.setup.BirthdayScreen
 import com.example.healthbuddy.screens.setup.FatPercentageScreen
 import com.example.healthbuddy.screens.setup.GenderScreen
 import com.example.healthbuddy.screens.setup.HeightScreen
@@ -42,7 +71,13 @@ import com.example.healthbuddy.screens.setup.WeightScreen
 import com.example.healthbuddy.screens.userinfo.EntryRoute
 import com.example.healthbuddy.screens.userinfo.UserInfoViewModel
 import com.example.healthbuddy.screens.wellcome.WelcomeScreen
+import com.example.healthbuddy.screens.workout.ExerciseDetailScreen
+import com.example.healthbuddy.screens.workout.ExercisePickerScreen
+import com.example.healthbuddy.screens.workout.TodayWorkoutScreen
 import com.example.healthbuddy.screens.workout.WorkoutViewModel
+import com.example.healthbuddy.ui.theme.AccentLime
+import com.example.healthbuddy.ui.theme.BackgroundDark
+import com.example.healthbuddy.ui.theme.LavenderBand
 import java.time.LocalDate
 import java.time.Period
 
@@ -64,7 +99,6 @@ sealed class Screen(val route: String) {
     data object SetUp : Screen("setup")
     data object Gender : Screen("gender")
     data object BirthdayScreen : Screen("birthday")
-    data object Age : Screen("age")
     data object Goal : Screen("goal")
     data object Plan : Screen("plan")
     data object Weight : Screen("weight")
@@ -72,6 +106,15 @@ sealed class Screen(val route: String) {
     data object FatPercentage : Screen("fat")
     data object Quiz : Screen("quiz")
 }
+
+sealed class Tab(val route: String, val label: String, val icon: Int) {
+    data object Home      : Tab("home",      "Home",      R.drawable.ic_home)
+    data object Workout   : Tab("workout",   "Work out",  R.drawable.ic_dumbbell)
+    data object Nutrition : Tab("nutrition", "Nutrition", R.drawable.ic_nutrition)
+    data object Profile   : Tab("profile",   "Profile",   R.drawable.ic_profile)
+}
+
+private val TABS = listOf(Tab.Home, Tab.Workout, Tab.Nutrition, Tab.Profile)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,6 +128,7 @@ fun MainApp(
 ) {
     val nav = rememberNavController()
     val ui by authViewModel.ui.collectAsState()
+
     var signUpRequest by remember {
         mutableStateOf(
             SignUpRequest(
@@ -107,17 +151,13 @@ fun MainApp(
 
     var goalId by remember { mutableIntStateOf(0) }
 
-    // Lần đầu vào app: nếu chưa login thì vào Auth
-    // Nếu sau này ui.isLoggedIn true (do token), LaunchedEffect sẽ điều hướng tiếp
     val startDest = Graph.Auth
 
-    LaunchedEffect(ui.isLoggedIn,) {
-
+    LaunchedEffect(ui.isLoggedIn) {
         val currentRoute = nav.currentBackStackEntry?.destination?.route
 
         if (ui.isLoggedIn) {
             val entry = userInfoViewModel.resolveEntryRoute()
-
             when (entry) {
                 EntryRoute.WEIGHT_HEIGHT -> {
                     nav.navigate(Screen.SetUp.route) {
@@ -125,21 +165,18 @@ fun MainApp(
                         launchSingleTop = true
                     }
                 }
-
                 EntryRoute.QUIZ -> {
                     nav.navigate(Screen.Quiz.route) {
                         popUpTo(Graph.Auth) { inclusive = true }
                         launchSingleTop = true
                     }
                 }
-
                 EntryRoute.GOAL -> {
                     nav.navigate(Screen.Goal.route) {
                         popUpTo(Graph.Auth) { inclusive = true }
                         launchSingleTop = true
                     }
                 }
-
                 EntryRoute.MAIN -> {
                     nav.navigate(Graph.Main) {
                         popUpTo(Graph.Auth) { inclusive = true }
@@ -147,7 +184,8 @@ fun MainApp(
                     }
                 }
             }
-        }else {
+        } else {
+            // Nếu logout thì quay lại Auth graph
             if (currentRoute?.startsWith(Graph.Auth) != true) {
                 nav.navigate(Graph.Auth) {
                     popUpTo(nav.graph.startDestinationId) { inclusive = true }
@@ -163,8 +201,11 @@ fun MainApp(
             startDestination = startDest,
             modifier = Modifier.padding(inner)
         ) {
-            // ---------- AUTH ----------
-            navigation(startDestination = Screen.Welcome.route, route = Graph.Auth) {
+            /* ---------------- AUTH GRAPH ---------------- */
+            navigation(
+                startDestination = Screen.Welcome.route,
+                route = Graph.Auth
+            ) {
                 composable(Screen.Welcome.route) {
                     WelcomeScreen(
                         onGetStarted = { nav.navigate(Screen.Login.route) }
@@ -177,7 +218,6 @@ fun MainApp(
                         onBack = { nav.popBackStack() },
                         onForgotPassword = { nav.navigate(Screen.Forgot.route) },
                         onLogin = { email, pw ->
-                            // chỉ login -> LaunchedEffect(ui.isLoggedIn) sẽ xử lý.
                             authViewModel.login(email, pw)
                         },
                         onSignUp = { nav.navigate(Screen.Register.route) }
@@ -196,11 +236,11 @@ fun MainApp(
                             )
                             nav.navigate(Screen.Gender.route)
                         },
+                        onTerms = {},
+                        onPrivacy = {},
                         onGoogle = {},
                         onFacebook = {},
-                        onBiometric = {},
-                        onTerms = {},
-                        onPrivacy = {}
+                        onBiometric = {}
                     )
                 }
 
@@ -239,12 +279,11 @@ fun MainApp(
                     BirthdayScreen(
                         onBack = { nav.popBackStack() },
                         onContinue = { day, month, year ->
-                            val dateOfBirth = LocalDate.of(year, month, day)
-                            val today = LocalDate.now()
-                            val age = Period.between(dateOfBirth, today).years
+                            val dob = LocalDate.of(year, month, day)
+                            val age = Period.between(dob, LocalDate.now()).years
 
                             signUpRequest = signUpRequest.copy(
-                                birthDay = dateOfBirth.toString(),
+                                birthDay = dob.toString(),
                                 age = age
                             )
 
@@ -255,7 +294,6 @@ fun MainApp(
                 }
             }
 
-            // ---------- ONBOARDING FLOW ----------
             composable(Screen.SetUp.route) {
                 SetUpScreen(
                     onBack = {},
@@ -288,10 +326,8 @@ fun MainApp(
             composable(Screen.FatPercentage.route) {
                 FatPercentageScreen(
                     onBack = { nav.popBackStack() },
-                    onContinue = { fatPercentage->
-                        healthInfoRequest = healthInfoRequest.copy(
-                            fatPercentage = fatPercentage
-                        )
+                    onContinue = { fat ->
+                        healthInfoRequest = healthInfoRequest.copy(fatPercentage = fat)
                         userInfoViewModel.submit(healthInfoRequest)
                         nav.navigate(Screen.Quiz.route)
                     }
@@ -364,10 +400,13 @@ fun MainApp(
                 }
             }
 
-            // ---------- MAIN ----------
-            navigation(startDestination = "main/screen", route = Graph.Main) {
+            navigation(
+                startDestination = "main/screen",
+                route = Graph.Main
+            ) {
                 composable("main/screen") {
                     MainScreenGraph(
+                        rootNav = nav,
                         authViewModel = authViewModel,
                         goalViewModel = goalViewModel,
                         userInfoViewModel = userInfoViewModel,
@@ -377,5 +416,346 @@ fun MainApp(
                 }
             }
         }
+    }
+}
+
+
+@Composable
+fun MainScreenGraph(
+    rootNav: NavHostController,
+    authViewModel: AuthViewModel,
+    goalViewModel: GoalViewModel,
+    userInfoViewModel: UserInfoViewModel,
+    menuViewModel: MenuViewModel,
+    workoutViewModel: WorkoutViewModel
+) {
+    val tabNav: NavHostController = rememberNavController()
+    val backStack by tabNav.currentBackStackEntryAsState()
+    val currentDestination = backStack?.destination
+
+    val showBar = currentDestination
+        ?.hierarchy
+        ?.any { d -> TABS.any { it.route == d.route } } == true
+
+    Scaffold(
+        containerColor = BackgroundDark,
+        bottomBar = {
+            if (showBar) {
+                BottomBar(
+                    currentDestination = currentDestination,
+                    onSelect = { route ->
+                        tabNav.navigate(route) {
+                            popUpTo(tabNav.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
+            }
+        }
+    ) { inner ->
+        NavHost(
+            navController = tabNav,
+            startDestination = Tab.Home.route,
+            modifier = Modifier.padding(inner)
+        ) {
+
+            composable(Tab.Home.route) {
+                val ui by userInfoViewModel.ui.collectAsState()
+
+                //TODO: Home screen
+            }
+
+            navigation(
+                startDestination = "workout/today",
+                route = Tab.Workout.route
+            ) {
+
+                composable("workout/today") {
+                    val userUi by userInfoViewModel.ui.collectAsState()
+                    val level = userUi.user?.activityLevel ?: "beginner"
+
+                    TodayWorkoutScreen(
+                        viewModel = workoutViewModel,
+                        userActivityLevel = level,
+                        onOpenExercisePicker = { group ->
+                            tabNav.navigate("workout/exercises/${group.id}")
+                        },
+                        onOpenExerciseDetail = { exerciseId ->
+                            tabNav.navigate("workout/detail/$exerciseId")
+                        }
+                    )
+                }
+
+                composable("workout/exercises/{muscleId}") { backStack ->
+                    val muscleId = backStack.arguments?.getString("muscleId")!!.toLong()
+                    val userUi by userInfoViewModel.ui.collectAsState()
+                    val level = userUi.user?.activityLevel ?: "beginner"
+
+                    ExercisePickerScreen(
+                        viewModel = workoutViewModel,
+                        userActivityLevel = level,
+                        muscleGroupId = muscleId,
+                        onBack = { tabNav.popBackStack() },
+                        onExerciseSelected = { ex ->
+                            tabNav.navigate("workout/add/${ex.id}")
+                        },
+                        onOpenExerciseDetail = { ex ->
+                            tabNav.navigate("workout/detail/${ex.id}")
+                        }
+                    )
+                }
+
+                composable("workout/add/{exerciseId}") { backStackEntry ->
+                    val id =
+                        backStackEntry.arguments?.getString("exerciseId")!!.toLong()
+                    ExerciseDetailScreen(
+                        viewModel = workoutViewModel,
+                        exerciseId = id,
+                        onBack = {
+                            tabNav.navigate("workout/today") {
+                                popUpTo("workout/today") { inclusive = false }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+                composable("workout/detail/{exerciseId}") { backStackEntry ->
+                    val id =
+                        backStackEntry.arguments?.getString("exerciseId")!!.toLong()
+                    ExerciseDetailScreen(
+                        viewModel = workoutViewModel,
+                        exerciseId = id,
+                        onBack = {
+                            tabNav.navigate("workout/today") {
+                                popUpTo("workout/today") { inclusive = false }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+            }
+
+            navigation(
+                startDestination = "nutrition/menu",
+                route = Tab.Nutrition.route
+            ) {
+
+                composable("nutrition/menu") {
+                    MenuTodayScreen(
+                        menuViewModel = menuViewModel,
+                        onOpenRecipePicker = { meal ->
+                            tabNav.navigate("nutrition/recipePicker/${meal.id}")
+                        },
+                        onEditMealRecipe = { mealId, mealRecipeId ->
+                            tabNav.navigate("nutrition/meal/$mealId/recipe/$mealRecipeId")
+                        }
+                    )
+                }
+
+                composable("nutrition/recipePicker/{mealId}") { backStack ->
+                    val mealId =
+                        backStack.arguments?.getString("mealId")?.toLongOrNull()
+                            ?: return@composable
+
+                    RecipePickerScreen(
+                        vm = menuViewModel,
+                        onBack = { tabNav.popBackStack() },
+                        onDetail = { recipeId ->
+                            tabNav.navigate("recipe/detail/$mealId/$recipeId")
+                        }
+                    )
+                }
+
+                composable("recipe/detail/{mealId}/{recipeId}") { backStackEntry ->
+                    val mealId =
+                        backStackEntry.arguments?.getString("mealId")!!.toLong()
+                    val recipeId =
+                        backStackEntry.arguments?.getString("recipeId")!!.toLong()
+
+                    val ui by menuViewModel.ui.collectAsState()
+                    val recipe = ui.recipes.first { it.id == recipeId }
+
+                    RecipeDetailScreen(
+                        mealId = mealId,
+                        recipe = recipe,
+                        vm = menuViewModel,
+                        onBack = { tabNav.popBackStack() },
+                        onAdded = {
+                            tabNav.navigate("nutrition/menu") {
+                                popUpTo(0) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+
+                composable(
+                    route = "nutrition/meal/{mealId}/recipe/{mealRecipeId}"
+                ) { backStackEntry ->
+                    val mealId =
+                        backStackEntry.arguments?.getString("mealId")
+                            ?.toLongOrNull() ?: return@composable
+
+                    val mealRecipeId =
+                        backStackEntry.arguments?.getString("mealRecipeId")
+                            ?.toLongOrNull() ?: return@composable
+
+                    val ui by menuViewModel.ui.collectAsState()
+
+                    val mealRecipe = ui.menu
+                        ?.meals
+                        ?.firstOrNull { it.id == mealId }
+                        ?.mealRecipes
+                        ?.firstOrNull { it.id == mealRecipeId }
+
+                    if (mealRecipe == null) {
+                        LaunchedEffect(Unit) { tabNav.popBackStack() }
+                        return@composable
+                    }
+
+                    LaunchedEffect(mealRecipeId) {
+                        menuViewModel.startEditingMealRecipe(mealRecipe)
+                    }
+
+                    EditMealRecipeScreen(
+                        vm = menuViewModel,
+                        onBack = {
+                            tabNav.navigate("nutrition/menu") {
+                                popUpTo(0) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+            }
+
+            composable(Tab.Profile.route) {
+                val ui by userInfoViewModel.ui.collectAsState()
+
+                when {
+                    ui.error != null -> {
+                        Text(
+                            text = ui.error ?: "Error loading profile",
+                            color = Color.Red,
+                            modifier = Modifier.padding(24.dp)
+                        )
+                    }
+
+                    ui.user != null -> {
+                        ProfileOverviewScreen(
+                            user = ui.user!!,
+                            healthInfo = ui.healthInfo!!,
+                            avatarUrl = null,
+                            onBack = { },
+                            onEditProfile = {
+                                tabNav.navigate("profile/edit")
+                            },
+                            onChooseNewPlan = {
+                                rootNav.navigate(Screen.SetUp.route) {
+                                    popUpTo(Graph.Main) { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            },
+                            onOpenPrivacy = { },
+                            onOpenSettings = { },
+                            onOpenHelp = { },
+                            onLogout = {
+                                authViewModel.logout()
+                            }
+                        )
+                    }
+
+                    else -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = AccentLime)
+                        }
+                    }
+                }
+            }
+
+            composable("profile/edit") {
+                val ui by userInfoViewModel.ui.collectAsState()
+
+                UpdateHealthInfoScreen(
+                    user = ui.user!!,
+                    healthInfo = ui.healthInfo!!,
+                    avatarUrl = null,
+                    onBack = { tabNav.popBackStack() },
+                    onUpdate = { newHealth ->
+                        userInfoViewModel.submit(
+                            HealthInfoRequest(
+                                height = newHealth.height,
+                                weight = newHealth.weight,
+                                fatPercentage = newHealth.fatPercentage
+                            )
+                        )
+                        tabNav.popBackStack()
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun BottomBar(
+    currentDestination: NavDestination?,
+    onSelect: (String) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(LavenderBand)
+            .padding(horizontal = 20.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TABS.forEach { tab ->
+            val selected =
+                currentDestination?.hierarchy?.any { it.route == tab.route } == true
+
+            BottomBarIcon(
+                icon = tab.icon,
+                contentDescription = tab.label,
+                selected = selected,
+                onClick = { onSelect(tab.route) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun BottomBarIcon(
+    icon: Int,
+    contentDescription: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    val targetSize = if (selected) 30.dp else 22.dp
+    val size by animateDpAsState(targetValue = targetSize, label = "iconSize")
+    val interaction = remember { MutableInteractionSource() }
+
+    Box(
+        modifier = Modifier
+            .size(44.dp)
+            .clip(CircleShape)
+            .clickable(
+                interactionSource = interaction,
+                onClick = onClick
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            painter = painterResource(icon),
+            contentDescription = contentDescription,
+            tint = Color.White,
+            modifier = Modifier.size(size)
+        )
     }
 }

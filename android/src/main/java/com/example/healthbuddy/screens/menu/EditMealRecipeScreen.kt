@@ -72,7 +72,9 @@ fun EditMealRecipeScreen(
     val editing = ui.editingMealRecipe
 
     if (editing == null) {
-        LaunchedEffect(Unit) { onBack() }
+        LaunchedEffect(Unit) {
+            vm.loadMenuForToday()
+        }
         return
     }
 
