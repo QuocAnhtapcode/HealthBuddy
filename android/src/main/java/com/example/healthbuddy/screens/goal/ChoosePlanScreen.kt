@@ -283,17 +283,7 @@ private fun DayChip(day: String, category: String, selected: Boolean) {
             .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            painter = painterResource(
-                //if (isCardio) R.drawable.ic_run_small else R.drawable.ic_dumbbell_small
-                R.drawable.ic_star
-            ),
-            contentDescription = null,
-            tint = chipText,
-            modifier = Modifier.size(12.dp)
-        )
-        Spacer(Modifier.width(4.dp))
-        Text(shortDay, color = chipText, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+        Text(shortDay, color = chipText, fontSize = 10.sp, fontWeight = FontWeight.SemiBold)
     }
 }
 

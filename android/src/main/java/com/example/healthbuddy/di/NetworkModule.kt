@@ -3,6 +3,7 @@ package com.example.healthbuddy.di
 import android.util.Log
 import com.example.healthbuddy.data.local.TokenStore
 import com.example.healthbuddy.data.api.AuthApi
+import com.example.healthbuddy.data.api.HomeApi
 import com.example.healthbuddy.data.api.WorkOutApi
 import com.example.healthbuddy.data.api.MenuApi
 import com.example.healthbuddy.data.api.QuizApi
@@ -149,4 +150,10 @@ object NetworkModule {
     @Singleton
     fun provideMenuApi(retrofit: Retrofit): MenuApi =
         retrofit.create(MenuApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideHomeApi(retrofit: Retrofit): HomeApi =
+        retrofit.create(HomeApi::class.java)
+
 }
