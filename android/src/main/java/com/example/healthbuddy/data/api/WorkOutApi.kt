@@ -8,6 +8,7 @@ import com.example.healthbuddy.data.model.TodayWorkoutSession
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -36,10 +37,15 @@ interface WorkOutApi {
         @Query("muscleGroup") muscleGroup: Long
     ): ExercisePageResponse
 
-
     // 3) Thêm 1 bài tập vào session
     @POST("session-exercises")
     suspend fun addSessionExercise(
+        @Body body: SessionExerciseCreateRequest
+    )
+
+    @PUT("session-exercises/{id}")
+    suspend fun updateSessionExercise(
+        @Path("id") id: Long,
         @Body body: SessionExerciseCreateRequest
     )
 }

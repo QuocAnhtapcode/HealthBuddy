@@ -1,7 +1,5 @@
-package com.example.healthbuddy.screens.test
+package com.example.healthbuddy.screens.home
 
-import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.healthbuddy.common.DataPaths
 import com.google.android.gms.wearable.CapabilityClient
@@ -16,9 +14,19 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+
+data class RunStatsUi(
+    val averageHeartRate: Int? = null,
+    val totalDistanceMeters: Int? = null,
+    val totalCalories: Int? = null,
+    val durationMillis: Long? = null,
+    val timestampMillis: Long? = null,
+    val rawMessage: String = "Waiting..."
+)
 
 @HiltViewModel
-class WorkoutViewModel @Inject constructor(
+class HomeViewModel @Inject constructor(
     private val dataClient: DataClient,
     private val messageClient: MessageClient,
     private val capabilityClient: CapabilityClient
@@ -27,25 +35,25 @@ class WorkoutViewModel @Inject constructor(
     MessageClient.OnMessageReceivedListener,
     CapabilityClient.OnCapabilityChangedListener {
 
-    private val _message = MutableStateFlow("Waiting...")
-    val message = _message.asStateFlow()
+    private val _ui = MutableStateFlow(RunStatsUi())
+    val ui = _ui.asStateFlow()
 
     fun start() {
         messageClient.addListener(this)
         dataClient.addListener(this)
-        // capabilityClient.addListener(this, YOUR_CAPABILITY)
     }
 
     fun stop() {
         messageClient.removeListener(this)
         dataClient.removeListener(this)
-        // capabilityClient.removeListener(this)
     }
 
     override fun onMessageReceived(event: MessageEvent) {
-        Log.d("PhoneVM", "onMessageReceived path=${event.path} bytes=${event.data.size}")
         when (event.path) {
-            DataPaths.EXERCISE_PATH -> _message.value = event.data.decodeToString()
+            DataPaths.EXERCISE_PATH -> {
+                val text = event.data.decodeToString()
+                _ui.update { it.copy(rawMessage = text) }
+            }
         }
     }
 
@@ -60,13 +68,25 @@ class WorkoutViewModel @Inject constructor(
                 val cal = map.getInt("totalCalories")
                 val dur = map.getLong("duration")
                 val ts  = map.getLong("timestamp")
-                _message.value = "hr=$hr, dist=$dist, cal=$cal, dur=$dur, ts=$ts"
+
+                _ui.value = RunStatsUi(
+                    averageHeartRate = hr.takeIf { it > 0 },
+                    totalDistanceMeters = dist.takeIf { it >= 0 },
+                    totalCalories = cal.takeIf { it >= 0 },
+                    durationMillis = dur.takeIf { it >= 0 },
+                    timestampMillis = ts.takeIf { it > 0 },
+                    rawMessage = "hr=$hr, dist=$dist, cal=$cal, dur=$dur, ts=$ts"
+                )
             }
         }
     }
 
     override fun onCapabilityChanged(info: CapabilityInfo) {
-        Log.d("PhoneVM", "onCapabilityChanged: ${info.name} nodes=${info.nodes}")
+        // Optional: update connected state later
+    }
+
+    override fun onCleared() {
+        stop()
+        super.onCleared()
     }
 }
-

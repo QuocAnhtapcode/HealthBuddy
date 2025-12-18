@@ -60,6 +60,7 @@ import com.example.healthbuddy.ui.theme.TextPrimary
 fun ExerciseDetailScreen(
     viewModel: WorkoutViewModel,
     exerciseId: Long,
+    isUpdateScreen: Boolean = false,
     onBack: () -> Unit
 ) {
     val ui by viewModel.ui.collectAsState()
@@ -77,6 +78,12 @@ fun ExerciseDetailScreen(
         return
     }
 
+    val sessionExercise = ui.todaySession
+        ?.sessionExercises
+        ?.firstOrNull { it.exercise.id == exerciseId }
+
+    val sessionExerciseId = sessionExercise?.id
+
     val isDurationBased =
         exercise.unit.equals("MET", ignoreCase = true) ||
             exercise.unit.equals("HOUR", ignoreCase = true)
@@ -89,13 +96,26 @@ fun ExerciseDetailScreen(
 
     val adding = ui.addingExercise
 
+    LaunchedEffect(isUpdateScreen, exerciseId) {
+        val se = ui.todaySession?.sessionExercises?.firstOrNull { it.exercise.id == exerciseId }
+        if (isUpdateScreen && se != null) {
+            if (isDurationBased) {
+                hoursText = (se.hours ?: 1f).toString()
+            } else {
+                repsText = (se.reps ?: 12).toString()
+                setsText = (se.sets ?: 3).toString()
+                weightText = (se.weightUsed ?: 20f).toString()
+            }
+        }
+    }
+
     Scaffold(
         containerColor = BackgroundDark,
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Exercise detail",
+                        text = exercise.name,
                         color = TextPrimary,
                         fontWeight = FontWeight.Bold
                     )
@@ -121,7 +141,6 @@ fun ExerciseDetailScreen(
                 .fillMaxSize()
                 .background(BackgroundDark)
         ) {
-            // ---------- Hero image + play button ----------
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -137,9 +156,8 @@ fun ExerciseDetailScreen(
                         contentDescription = exercise.name,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(260.dp)
                             .clip(RoundedCornerShape(22.dp)),
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Fit
                     )
                 } else {
                     Box(
@@ -158,30 +176,6 @@ fun ExerciseDetailScreen(
                         )
                     }
                 }
-
-                // Nút play ở giữa
-                Box(
-                    modifier = Modifier
-                        .size(84.dp)
-                        .clip(CircleShape)
-                        .background(AccentLime),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(64.dp)
-                            .clip(CircleShape)
-                            .background(Color.White),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = "Play demo",
-                            tint = LavenderBand,
-                            modifier = Modifier.size(34.dp)
-                        )
-                    }
-                }
             }
 
             // ---------- Card thông tin + input ----------
@@ -193,42 +187,14 @@ fun ExerciseDetailScreen(
                     .background(AccentLime.copy(alpha = 0.9f))
                     .padding(16.dp)
             ) {
-                Text(
-                    text = exercise.name,
-                    color = BackgroundDark,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
                 if (!exercise.description.isNullOrBlank()) {
                     Spacer(Modifier.height(6.dp))
                     Text(
-                        text = exercise.description!!,
+                        text = exercise.description,
                         color = BackgroundDark.copy(alpha = 0.8f),
                         fontSize = 13.sp
                     )
                 }
-
-                Spacer(Modifier.height(10.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    InfoTag(
-                        text = "${exercise.defaultCaloriesPerUnit} ${exercise.unit}"
-                    )
-                    InfoTag(
-                        text = exercise.difficulty.replaceFirstChar { it.titlecase() }
-                    )
-                    if (exercise.muscleGroups.isNotEmpty()) {
-                        InfoTag(
-                            text = exercise.muscleGroups.joinToString { it.name }
-                        )
-                    }
-                }
-
-                Spacer(Modifier.height(16.dp))
-
                 if (isDurationBased) {
                     // --- Input theo thời gian ---
                     Text(
@@ -261,15 +227,6 @@ fun ExerciseDetailScreen(
                             .height(48.dp)
                     )
                 } else {
-                    // --- Input reps / sets / weight ---
-                    Text(
-                        text = "Reps / Sets / Weight",
-                        color = BackgroundDark,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(Modifier.height(6.dp))
-
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
@@ -298,29 +255,69 @@ fun ExerciseDetailScreen(
 
                 Button(
                     onClick = {
-                        if (isDurationBased) {
-                            val h = hoursText.toFloatOrNull() ?: 0f
-                            if (h > 0f) {
-                                viewModel.addExerciseAsDuration(
-                                    exerciseId = exercise.id,
-                                    hours = h,
-                                    onDone = onBack
-                                )
+                        if (isUpdateScreen) {
+                            val sessionExercise = ui.todaySession
+                                ?.sessionExercises
+                                ?.firstOrNull { it.exercise.id == exerciseId }
+
+                            val sessionExerciseId = sessionExercise?.id
+                            if (sessionExerciseId == null) {
+                                // Không có record để update -> báo lỗi hoặc quay lại
+                                // (tuỳ bạn)
+                                return@Button
                             }
-                        } else {
-                            val reps = repsText.toIntOrNull() ?: 0
-                            val sets = setsText.toIntOrNull() ?: 0
-                            val weight = weightText.toFloatOrNull() ?: 0f
-                            if (reps > 0 && sets > 0 && weight > 0f) {
-                                viewModel.addExerciseAsStrength(
-                                    exerciseId = exercise.id,
-                                    reps = reps,
-                                    sets = sets,
-                                    weight = weight,
-                                    onDone = onBack
-                                )
+
+                            if (isDurationBased) {
+                                val h = hoursText.toFloatOrNull() ?: 0f
+                                if (h > 0f) {
+                                    viewModel.updateExerciseAsDuration(
+                                        sessionExerciseId = sessionExerciseId,
+                                        exerciseId = exercise.id,
+                                        hours = h,
+                                        onDone = onBack
+                                    )
+                                }
+                            } else {
+                                val reps = repsText.toIntOrNull() ?: 0
+                                val sets = setsText.toIntOrNull() ?: 0
+                                val weight = weightText.toFloatOrNull() ?: 0f
+                                if (reps > 0 && sets > 0 && weight > 0f) {
+                                    viewModel.updateExerciseAsStrength(
+                                        sessionExerciseId = sessionExerciseId,
+                                        exerciseId = exercise.id,
+                                        reps = reps,
+                                        sets = sets,
+                                        weight = weight,
+                                        onDone = onBack
+                                    )
+                                }
+                            }
+                        } else{
+                            if (isDurationBased) {
+                                val h = hoursText.toFloatOrNull() ?: 0f
+                                if (h > 0f) {
+                                    viewModel.addExerciseAsDuration(
+                                        exerciseId = exercise.id,
+                                        hours = h,
+                                        onDone = onBack
+                                    )
+                                }
+                            } else {
+                                val reps = repsText.toIntOrNull() ?: 0
+                                val sets = setsText.toIntOrNull() ?: 0
+                                val weight = weightText.toFloatOrNull() ?: 0f
+                                if (reps > 0 && sets > 0 && weight > 0f) {
+                                    viewModel.addExerciseAsStrength(
+                                        exerciseId = exercise.id,
+                                        reps = reps,
+                                        sets = sets,
+                                        weight = weight,
+                                        onDone = onBack
+                                    )
+                                }
                             }
                         }
+
                     },
                     enabled = !adding,
                     shape = RoundedCornerShape(20.dp),
@@ -340,30 +337,25 @@ fun ExerciseDetailScreen(
                             strokeWidth = 2.dp
                         )
                     } else {
-                        Text(
-                            text = "Add to plan",
-                            color = AccentLime,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                        if(isUpdateScreen){
+                            Text(
+                                text = "Update",
+                                color = AccentLime,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }else{
+                            Text(
+                                text = "Add to plan",
+                                color = AccentLime,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
-
-@Composable
-private fun InfoTag(text: String) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(BackgroundDark.copy(alpha = 0.12f))
-            .padding(horizontal = 10.dp, vertical = 4.dp)
-    ) {
-        Text(text, color = BackgroundDark, fontSize = 11.sp)
-    }
-}
-
 @Composable
 private fun SmallNumberField(
     label: String,
@@ -397,7 +389,7 @@ private fun SmallNumberField(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(44.dp)
+                .height(60.dp)
         )
     }
 }

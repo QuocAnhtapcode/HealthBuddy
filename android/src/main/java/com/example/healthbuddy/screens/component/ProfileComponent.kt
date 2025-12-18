@@ -135,14 +135,13 @@ fun HealthStatsCard(
 @Composable
 fun StatChip(label: String, value: String) {
     Column(
-        modifier = Modifier.widthIn(min = 80.dp)
+        modifier = Modifier.widthIn(min = 60.dp)
     ) {
-        Text(label, color = TextSecondary, fontSize = 11.sp)
-        Spacer(Modifier.height(2.dp))
+        Text(label, color = TextSecondary, fontSize = 10.sp)
         Text(
             value,
             color = AccentLime,
-            fontSize = 14.sp,
+            fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold
         )
     }

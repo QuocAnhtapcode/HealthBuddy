@@ -53,6 +53,8 @@ import com.example.healthbuddy.screens.auth.ResetPasswordScreen
 import com.example.healthbuddy.screens.goal.ChooseGoalScreen
 import com.example.healthbuddy.screens.goal.ChoosePlanScreen
 import com.example.healthbuddy.screens.goal.GoalViewModel
+import com.example.healthbuddy.screens.home.HomeRunScreen
+import com.example.healthbuddy.screens.home.HomeViewModel
 import com.example.healthbuddy.screens.menu.EditMealRecipeScreen
 import com.example.healthbuddy.screens.menu.MenuTodayScreen
 import com.example.healthbuddy.screens.menu.MenuViewModel
@@ -123,6 +125,7 @@ fun MainApp(
     userInfoViewModel: UserInfoViewModel = hiltViewModel(),
     quizViewModel: QuizViewModel = hiltViewModel(),
     goalViewModel: GoalViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel(),
     menuViewModel: MenuViewModel = hiltViewModel(),
     workoutViewModel: WorkoutViewModel = hiltViewModel()
 ) {
@@ -409,6 +412,7 @@ fun MainApp(
                         rootNav = nav,
                         authViewModel = authViewModel,
                         goalViewModel = goalViewModel,
+                        homeViewModel = homeViewModel,
                         userInfoViewModel = userInfoViewModel,
                         menuViewModel = menuViewModel,
                         workoutViewModel = workoutViewModel
@@ -419,12 +423,29 @@ fun MainApp(
     }
 }
 
+private fun shouldHideBottomBar(route: String?): Boolean {
+    if (route == null) return false
+
+    // Các màn "focus" (Edit/Detail/Add/Picker) -> ẩn bottom bar
+    return route in setOf(
+        "nutrition/recipePicker/{mealId}",
+        "recipe/detail/{mealId}/{recipeId}",
+        "nutrition/meal/{mealId}/recipe/{mealRecipeId}",
+
+        "workout/exercises/{muscleId}",
+        "workout/add/{exerciseId}",
+        "workout/detail/{exerciseId}",
+
+        "profile/edit"
+    )
+}
 
 @Composable
 fun MainScreenGraph(
     rootNav: NavHostController,
     authViewModel: AuthViewModel,
     goalViewModel: GoalViewModel,
+    homeViewModel: HomeViewModel,
     userInfoViewModel: UserInfoViewModel,
     menuViewModel: MenuViewModel,
     workoutViewModel: WorkoutViewModel
@@ -433,9 +454,13 @@ fun MainScreenGraph(
     val backStack by tabNav.currentBackStackEntryAsState()
     val currentDestination = backStack?.destination
 
-    val showBar = currentDestination
+    val currentRoute = currentDestination?.route
+
+    val isInTabGraph = currentDestination
         ?.hierarchy
         ?.any { d -> TABS.any { it.route == d.route } } == true
+
+    val showBar = isInTabGraph && !shouldHideBottomBar(currentRoute)
 
     Scaffold(
         containerColor = BackgroundDark,
@@ -463,9 +488,7 @@ fun MainScreenGraph(
         ) {
 
             composable(Tab.Home.route) {
-                val ui by userInfoViewModel.ui.collectAsState()
-
-                //TODO: Home screen
+                HomeRunScreen(homeViewModel=homeViewModel)
             }
 
             navigation(
@@ -499,11 +522,8 @@ fun MainScreenGraph(
                         userActivityLevel = level,
                         muscleGroupId = muscleId,
                         onBack = { tabNav.popBackStack() },
-                        onExerciseSelected = { ex ->
-                            tabNav.navigate("workout/add/${ex.id}")
-                        },
                         onOpenExerciseDetail = { ex ->
-                            tabNav.navigate("workout/detail/${ex.id}")
+                            tabNav.navigate("workout/add/${ex.id}")
                         }
                     )
                 }
@@ -514,6 +534,7 @@ fun MainScreenGraph(
                     ExerciseDetailScreen(
                         viewModel = workoutViewModel,
                         exerciseId = id,
+                        isUpdateScreen = false,
                         onBack = {
                             tabNav.navigate("workout/today") {
                                 popUpTo("workout/today") { inclusive = false }
@@ -528,6 +549,7 @@ fun MainScreenGraph(
                     ExerciseDetailScreen(
                         viewModel = workoutViewModel,
                         exerciseId = id,
+                        isUpdateScreen = true,
                         onBack = {
                             tabNav.navigate("workout/today") {
                                 popUpTo("workout/today") { inclusive = false }
@@ -649,7 +671,6 @@ fun MainScreenGraph(
                             user = ui.user!!,
                             healthInfo = ui.healthInfo!!,
                             avatarUrl = null,
-                            onBack = { },
                             onEditProfile = {
                                 tabNav.navigate("profile/edit")
                             },

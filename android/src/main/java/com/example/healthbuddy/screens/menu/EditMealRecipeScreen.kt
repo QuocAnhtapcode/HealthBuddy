@@ -223,12 +223,12 @@ private fun MacroChip(
         Text(
             text = label,
             color = TextSecondary,
-            fontSize = 11.sp
+            fontSize = 10.sp
         )
         Text(
             text = "${value.toInt()} $unit",
             color = TextPrimary,
-            fontSize = 13.sp,
+            fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold
         )
     }

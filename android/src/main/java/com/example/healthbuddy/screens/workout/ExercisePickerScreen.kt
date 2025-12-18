@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -47,7 +48,6 @@ fun ExercisePickerScreen(
     userActivityLevel: String,   // "beginner" | "intermediate" | "advanced"
     muscleGroupId: Long,
     onBack: () -> Unit,
-    onExerciseSelected: (Exercise) -> Unit,
     onOpenExerciseDetail: (Exercise) -> Unit
 ) {
     val ui by viewModel.ui.collectAsState()
@@ -210,8 +210,7 @@ fun ExercisePickerScreen(
                             items(ui.exercises, key = { it.id }) { exercise ->
                                 ExercisePickerRow(
                                     exercise = exercise,
-                                    onClick = { onOpenExerciseDetail(exercise) },
-                                    onAddClick = { onExerciseSelected(exercise) }
+                                    onClick = { onOpenExerciseDetail(exercise) }
                                 )
                             }
                         }
@@ -271,8 +270,7 @@ private fun LevelSegmentControl(
 @Composable
 private fun ExercisePickerRow(
     exercise: Exercise,
-    onClick: () -> Unit,
-    onAddClick: () -> Unit
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -283,19 +281,28 @@ private fun ExercisePickerRow(
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Play / thumbnail
-        Box(
-            modifier = Modifier
-                .size(42.dp)
-                .clip(CircleShape)
-                .background(LavenderBand),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.PlayArrow,
-                contentDescription = null,
-                tint = BackgroundDark
+        if (!exercise.imageUrl.isNullOrBlank()) {
+            AsyncImage(
+                model = exercise.imageUrl,
+                contentDescription = exercise.name,
+                modifier = Modifier
+                    .size(60.dp),
+                contentScale = ContentScale.Fit
             )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape)
+                    .background(LavenderBand),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = null,
+                    tint = BackgroundDark
+                )
+            }
         }
 
         Spacer(Modifier.width(10.dp))
@@ -319,26 +326,6 @@ private fun ExercisePickerRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-        }
-
-        Spacer(Modifier.width(8.dp))
-
-        Text(
-            text = exercise.difficulty.replaceFirstChar { it.titlecase() },
-            color = AccentLime,
-            fontSize = 11.sp,
-            modifier = Modifier.padding(end = 6.dp)
-        )
-
-        Button(
-            onClick = onAddClick,
-            shape = RoundedCornerShape(20.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = AccentLime
-            ),
-            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
-        ) {
-            Text("Add", color = BackgroundDark, fontSize = 11.sp)
         }
     }
 }

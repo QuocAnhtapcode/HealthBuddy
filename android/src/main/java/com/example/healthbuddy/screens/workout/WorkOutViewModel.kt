@@ -54,25 +54,13 @@ class WorkoutViewModel @Inject constructor(
                     }
                 }
                 .onFailure { e ->
-                    // Nếu backend dùng 500 để thể hiện “rest day”
-                    val isRest = (e as? HttpException)?.code() == 500
-
                     _ui.update {
-                        if (isRest) {
-                            it.copy(
-                                loadingSession = false,
-                                todaySession   = null,
-                                isRestDay      = true,
-                                error          = null     // không coi là lỗi
-                            )
-                        } else {
-                            it.copy(
-                                loadingSession = false,
-                                error          = e.message ?: "Cannot load today's session",
-                                todaySession   = null,
-                                isRestDay      = false
-                            )
-                        }
+                        it.copy(
+                            loadingSession = false,
+                            todaySession   = null,
+                            isRestDay      = true,
+                            error          = null
+                        )
                     }
                 }
         }
@@ -211,6 +199,70 @@ class WorkoutViewModel @Inject constructor(
                         it.copy(
                             addingExercise = false,
                             error = e.message ?: "Cannot reload session"
+                        )
+                    }
+                }
+        }
+    }
+
+    fun updateExerciseAsDuration(
+        sessionExerciseId: Long,
+        exerciseId: Long,
+        hours: Float,
+        onDone: () -> Unit = {}
+    ) {
+        val sessionId = _ui.value.todaySession?.id ?: return
+
+        viewModelScope.launch {
+            _ui.update { it.copy(addingExercise = true, error = null) }
+
+            val body = SessionExerciseCreateRequest(
+                exercise = IdRef(exerciseId),
+                session = IdRef(sessionId),
+                hours = hours
+            )
+
+            repo.updateSessionExercise(sessionExerciseId, body)
+                .onSuccess { reloadAfterAdd(onDone) }
+                .onFailure { e ->
+                    _ui.update {
+                        it.copy(
+                            addingExercise = false,
+                            error = e.message ?: "Cannot update exercise"
+                        )
+                    }
+                }
+        }
+    }
+
+    fun updateExerciseAsStrength(
+        sessionExerciseId: Long,
+        exerciseId: Long,
+        reps: Int,
+        sets: Int,
+        weight: Float,
+        onDone: () -> Unit = {}
+    ) {
+        val sessionId = _ui.value.todaySession?.id ?: return
+
+        viewModelScope.launch {
+            _ui.update { it.copy(addingExercise = true, error = null) }
+
+            val body = SessionExerciseCreateRequest(
+                exercise = IdRef(exerciseId),
+                session = IdRef(sessionId),
+                reps = reps,
+                sets = sets,
+                weightUsed = weight
+            )
+
+            repo.updateSessionExercise(sessionExerciseId, body)
+                .onSuccess { reloadAfterAdd(onDone) }
+                .onFailure { e ->
+                    _ui.update {
+                        it.copy(
+                            addingExercise = false,
+                            error = e.message ?: "Cannot update exercise"
                         )
                     }
                 }

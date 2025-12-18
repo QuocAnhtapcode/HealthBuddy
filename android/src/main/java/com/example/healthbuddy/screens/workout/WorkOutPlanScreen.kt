@@ -23,17 +23,23 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -60,8 +66,8 @@ import com.example.healthbuddy.ui.theme.TextSecondary
 fun TodayWorkoutScreen(
     viewModel: WorkoutViewModel,
     userActivityLevel: String,
-    onOpenExercisePicker: (MuscleGroup) -> Unit,     // navigate("workout/exercises/${group.id}")
-    onOpenExerciseDetail: (Long) -> Unit            // navigate("workout/detail/$exerciseId") nếu muốn
+    onOpenExercisePicker: (MuscleGroup) -> Unit,
+    onOpenExerciseDetail: (Long) -> Unit
 ) {
     val ui by viewModel.ui.collectAsState()
 
@@ -80,9 +86,11 @@ fun TodayWorkoutScreen(
                 CircularProgressIndicator(color = AccentLime)
             }
         }
+
         ui.isRestDay -> {
             RestDayScreen()
         }
+
         ui.error != null -> {
             Box(
                 modifier = Modifier
@@ -115,10 +123,7 @@ fun TodayWorkoutScreen(
                     .background(BackgroundDark),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    "No workout session for today.",
-                    color = TextSecondary
-                )
+                Text("No workout session for today.", color = TextSecondary)
             }
         }
 
@@ -126,6 +131,11 @@ fun TodayWorkoutScreen(
             val session = ui.todaySession!!
             val planSession = session.planSession
             val muscleGroups = planSession.muscleGroups
+
+            // chọn group mặc định: group đầu tiên
+            var selectedGroup by remember(session.id) {
+                mutableStateOf(muscleGroups.firstOrNull())
+            }
 
             Column(
                 modifier = Modifier
@@ -138,32 +148,175 @@ fun TodayWorkoutScreen(
                     userActivityLevel = userActivityLevel
                 )
 
-                Spacer(Modifier.height(12.dp))
+                // ---------- FILTER BAR (Dropdown + Add) ----------
+                FilterMuscleGroupBar(
+                    muscleGroups = muscleGroups,
+                    selectedGroup = selectedGroup,
+                    onSelect = { selectedGroup = it },
+                    onAdd = {
+                        selectedGroup?.let { onOpenExercisePicker(it) }
+                    }
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                // ---------- LIST EXERCISES USER ADDED ----------
+                val addedExercises = session.sessionExercises
 
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(horizontal = 16.dp, vertical = 4.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    // Mỗi card tương ứng 1 nhóm cơ trong buổi tập
-                    items(muscleGroups, key = { it.id }) { group ->
-                        val exercisesForGroup = session.sessionExercises.filter { sessionExercise ->
-                            sessionExercise.exercise.muscleGroups.any { mg -> mg.id == group.id }
-                        }
 
-                        MuscleGroupCard(
-                            muscleGroup = group,
-                            sessionExercises = exercisesForGroup,
-                            onAddClick = { onOpenExercisePicker(group) },
-                            onExerciseClick = { exId -> onOpenExerciseDetail(exId) }
+                    item {
+                        Text(
+                            text = "Added exercises",
+                            color = TextPrimary,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(top = 2.dp, bottom = 2.dp)
                         )
                     }
+
+                    if (addedExercises.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(22.dp))
+                                    .background(SurfaceDark)
+                                    .padding(16.dp)
+                            ) {
+                                Column {
+                                    Text(
+                                        text = "No exercises added yet.",
+                                        color = TextPrimary,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Spacer(Modifier.height(6.dp))
+                                    Text(
+                                        text = "Choose a muscle group above and tap Add to pick an exercise.",
+                                        color = TextSecondary,
+                                        fontSize = 12.sp,
+                                        lineHeight = 16.sp
+                                    )
+                                }
+                            }
+                        }
+                    } else {
+                        items(addedExercises, key = { it.id }) { item ->
+                            SessionExerciseRow(
+                                sessionExercise = item,
+                                onClick = { onOpenExerciseDetail(item.exercise.id) }
+                            )
+                        }
+                    }
+
+                    item { Spacer(Modifier.height(16.dp)) }
                 }
             }
         }
     }
 }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun FilterMuscleGroupBar(
+    muscleGroups: List<MuscleGroup>,
+    selectedGroup: MuscleGroup?,
+    onSelect: (MuscleGroup) -> Unit,
+    onAdd: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clip(RoundedCornerShape(22.dp))
+            .background(SurfaceDark)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        // Dropdown
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded },
+            modifier = Modifier.weight(1f)
+        ) {
+            Box(
+                modifier = Modifier
+                    .menuAnchor()
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(BackgroundDark.copy(alpha = 0.75f))
+                    .border(1.dp, Color.White.copy(alpha = 0.06f), RoundedCornerShape(18.dp))
+                    .padding(horizontal = 12.dp, vertical = 10.dp)
+                    .fillMaxWidth()
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = selectedGroup?.name ?: "Choose muscle group",
+                        color = if (selectedGroup == null) TextSecondary else TextPrimary,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = null,
+                        tint = TextSecondary
+                    )
+                }
+            }
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .background(SurfaceDark)
+            ) {
+                muscleGroups.forEach { g ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = g.name,
+                                color = TextPrimary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        },
+                        onClick = {
+                            onSelect(g)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+
+        Spacer(Modifier.width(10.dp))
+
+        Box(
+            modifier = Modifier
+                .size(44.dp)
+                .clip(CircleShape)
+                .background(BackgroundDark)
+                .border(2.dp, AccentLime, CircleShape)
+                .clickable(enabled = selectedGroup != null) { onAdd() },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add exercise",
+                tint = AccentLime
+            )
+        }
+    }
+}
+
 
 @Composable
 private fun TodayWorkoutStatusHeader(
@@ -215,40 +368,24 @@ private fun TodayWorkoutStatusHeader(
                     Text(
                         text = session.planSession.category.lowercase()
                             .replaceFirstChar { it.titlecase() },
-                        color = TextPrimary.copy(alpha = 0.9f),
-                        fontSize = 13.sp
+                        color = TextPrimary,
+                        fontSize = 14.sp
                     )
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = "${estimated.toInt()} / ${target.toInt()} kcal",
                         color = AccentLime,
-                        fontSize = 20.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.ExtraBold
-                    )
-                    Text(
-                        text = "Estimated vs target",
-                        color = TextPrimary.copy(alpha = 0.7f),
-                        fontSize = 11.sp
                     )
                 }
 
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = "Level",
-                        color = TextSecondary.copy(alpha = 0.9f),
-                        fontSize = 11.sp
-                    )
-                    Text(
                         text = userActivityLevel.replaceFirstChar { it.titlecase() },
                         color = TextPrimary,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        text = "${session.sessionExercises.size} exercises",
-                        color = TextSecondary,
-                        fontSize = 11.sp
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -275,79 +412,6 @@ private fun TodayWorkoutStatusHeader(
 }
 
 @Composable
-private fun MuscleGroupCard(
-    muscleGroup: MuscleGroup,
-    sessionExercises: List<SessionExercise>,
-    onAddClick: () -> Unit,
-    onExerciseClick: (Long) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
-            .background(SurfaceDark)
-            .padding(14.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(999.dp))
-                    .background(BackgroundDark),
-            ) {
-                Text(
-                    text = muscleGroup.name,
-                    color = AccentLime,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
-                )
-            }
-
-            Spacer(Modifier.weight(1f))
-
-            // Nút Add tròn giống bản vẽ
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(BackgroundDark)
-                    .border(2.dp, AccentLime, CircleShape)
-                    .clickable(onClick = onAddClick),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add exercise",
-                    tint = AccentLime
-                )
-            }
-        }
-
-        Spacer(Modifier.height(10.dp))
-
-        if (sessionExercises.isEmpty()) {
-            Text(
-                text = "No exercises added yet for this muscle group.",
-                color = TextSecondary,
-                fontSize = 12.sp
-            )
-        } else {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                sessionExercises.forEach { item ->
-                    SessionExerciseRow(
-                        sessionExercise = item,
-                        onClick = { onExerciseClick(item.exercise.id) }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun SessionExerciseRow(
     sessionExercise: SessionExercise,
     onClick: () -> Unit
@@ -358,23 +422,33 @@ private fun SessionExerciseRow(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(18.dp))
-            .background(BackgroundDark.copy(alpha = 0.75f))
+            .background(BackgroundDark.copy(alpha = 0.7f))
             .clickable(onClick = onClick)
             .padding(horizontal = 10.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(34.dp)
-                .clip(CircleShape)
-                .background(LavenderBand.copy(alpha = 0.6f)),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.Default.PlayArrow,
-                contentDescription = null,
-                tint = BackgroundDark
+        if (!exercise.imageUrl.isNullOrBlank()) {
+            AsyncImage(
+                model = exercise.imageUrl,
+                contentDescription = exercise.name,
+                modifier = Modifier
+                    .size(60.dp),
+                contentScale = ContentScale.Fit
             )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape)
+                    .background(LavenderBand),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.PlayArrow,
+                    contentDescription = null,
+                    tint = BackgroundDark
+                )
+            }
         }
 
         Spacer(Modifier.width(10.dp))
@@ -395,12 +469,5 @@ private fun SessionExerciseRow(
                 fontSize = 11.sp
             )
         }
-
-        Text(
-            text = exercise.difficulty.replaceFirstChar { it.titlecase() },
-            color = AccentLime,
-            fontSize = 11.sp,
-            fontWeight = FontWeight.SemiBold
-        )
     }
 }

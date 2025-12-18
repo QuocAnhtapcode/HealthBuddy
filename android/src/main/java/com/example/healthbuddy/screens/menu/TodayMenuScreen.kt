@@ -278,7 +278,7 @@ private fun TodaySummaryCard(menu: Menu) {
             .fillMaxWidth()
             .clip(RoundedCornerShape(22.dp))
             .background(LavenderBand)
-            .padding(horizontal = 18.dp, vertical = 14.dp)
+            .padding(horizontal = 12.dp, vertical = 10.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -287,27 +287,25 @@ private fun TodaySummaryCard(menu: Menu) {
             Column {
                 Text(
                     text = "Calories today",
-                    color = TextPrimary.copy(alpha = 0.8f),
-                    fontSize = 13.sp
+                    color = TextPrimary,
+                    fontSize = 12.sp
                 )
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
                         text = actual.toInt().toString(),
                         color = AccentLime,
-                        fontSize = 22.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.ExtraBold
                     )
                     Text(
                         text = " / ${target.toInt()} kcal",
                         color = AccentLime,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(bottom = 2.dp)
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
                     )
                 }
             }
-
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
@@ -320,7 +318,6 @@ private fun TodaySummaryCard(menu: Menu) {
 
         Spacer(Modifier.height(12.dp))
 
-        // ---- Progress bar ----
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -345,16 +342,16 @@ private fun MacroLine(
     value: Float
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(8.dp)) {
+        modifier = Modifier.padding(4.dp)) {
         Text(
             text = label,
             color = TextPrimary,
-            fontSize = 14.sp
+            fontSize = 12.sp
         )
         Text(
             text = "${value.toInt()} g",
             color = TextPrimary,
-            fontSize = 14.sp,
+            fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold
         )
     }

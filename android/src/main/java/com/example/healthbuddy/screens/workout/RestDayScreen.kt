@@ -39,7 +39,6 @@ fun RestDayScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // Card tím
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -99,7 +98,7 @@ fun RestDayScreen() {
         }
 
         Spacer(Modifier.height(32.dp))
-        
+
         Text(
             text = "Thưởng cho bản thân một ngày nghỉ tốt, ngày mai chúng ta tập tiếp! 💪",
             color = TextSecondary,
