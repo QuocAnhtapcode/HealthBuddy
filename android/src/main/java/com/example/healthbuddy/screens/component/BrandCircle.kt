@@ -22,7 +22,7 @@ import com.example.healthbuddy.ui.theme.TextPrimary
 private fun IconCircle(icon: @Composable () -> Unit, onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .size(56.dp)
+            .size(40.dp)
             .clip(CircleShape)
             .background(LavenderBand.copy(alpha = 0.25f))
             .clickable(onClick = onClick),
@@ -39,7 +39,7 @@ fun BrandCircle(@DrawableRes icon: Int, onClick: () -> Unit) {
         Image(
             painter = painterResource(icon),
             contentDescription = null,
-            modifier = Modifier.size(28.dp)
+            modifier = Modifier.size(24.dp)
         )
     }, onClick = onClick)
 }

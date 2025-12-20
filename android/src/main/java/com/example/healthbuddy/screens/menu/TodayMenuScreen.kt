@@ -119,14 +119,14 @@ fun MenuTodayScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(
-                            text = "No menu for today yet",
+                            text = "Hôm nay bạn chưa ăn gì",
                             color = TextPrimary,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.SemiBold
                         )
                         Spacer(Modifier.height(8.dp))
                         Text(
-                            text = "Start by adding your first meal.",
+                            text = "Hãy thêm bữa ăn đầu tiên của bạn",
                             color = TextSecondary,
                             fontSize = 14.sp
                         )
@@ -182,7 +182,7 @@ private fun TodayMenuContent(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    "No meals yet. Tap \"Add meal\" to start.",
+                    "Chưa có bữa ăn. Nhấn \"+\" để thêm",
                     color = TextSecondary,
                     fontSize = 14.sp,
                     textAlign = TextAlign.Center,
@@ -270,7 +270,7 @@ private fun TodaySummaryCard(menu: Menu) {
     val ratio = ratioRaw.coerceIn(0f, 1.3f)
     val animatedRatio by animateFloatAsState(
         targetValue = ratio.coerceIn(0f, 1f),
-        label = "calorieProgress"
+        label = "Tiến độ calo"
     )
 
     Column(
@@ -286,7 +286,7 @@ private fun TodaySummaryCard(menu: Menu) {
         ) {
             Column {
                 Text(
-                    text = "Calories today",
+                    text = "Calo hôm nay",
                     color = TextPrimary,
                     fontSize = 12.sp
                 )
@@ -295,7 +295,7 @@ private fun TodaySummaryCard(menu: Menu) {
                     Text(
                         text = actual.toInt().toString(),
                         color = AccentLime,
-                        fontSize = 18.sp,
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.ExtraBold
                     )
                     Text(
@@ -310,9 +310,9 @@ private fun TodaySummaryCard(menu: Menu) {
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                MacroLine(label = "Protein", value = menu.actualTotalProtein)
-                MacroLine(label = "Carbs",   value = menu.actualTotalCarb)
-                MacroLine(label = "Fat",     value = menu.actualTotalFat)
+                MacroLine(label = "Đạm", value = menu.actualTotalProtein)
+                MacroLine(label = "Tinh bột", value = menu.actualTotalCarb)
+                MacroLine(label = "Chất béo", value = menu.actualTotalFat)
             }
         }
 
@@ -346,7 +346,7 @@ private fun MacroLine(
         Text(
             text = label,
             color = TextPrimary,
-            fontSize = 12.sp
+            fontSize = 10.sp
         )
         Text(
             text = "${value.toInt()} g",
@@ -365,11 +365,11 @@ private fun MealCard(
     onEditMealRecipe: (mealId: Long, mealRecipeId: Long) -> Unit
 ) {
     val title = when (meal.mealType) {
-        MealType.BREAKFAST -> "Breakfast"
-        MealType.LUNCH ->  "Lunch"
-        MealType.DINNER ->  "Dinner"
-        MealType.SNACK ->  "Snack"
-        else        -> meal.mealType ?: "Meal ${meal.id}"
+        MealType.BREAKFAST -> "Bữa sáng"
+        MealType.LUNCH ->  "Bữa trưa"
+        MealType.DINNER ->  "Bữa tối"
+        MealType.SNACK ->  "Ăn vặt"
+        else        -> meal.mealType ?: "Bữa ${meal.id}"
     }
 
     val iconEmoji = when (meal.mealType) {
@@ -436,7 +436,7 @@ private fun MealCard(
                     contentColor = AccentLime
                 )
             ) {
-                Text("Add recipe", fontSize = 12.sp)
+                Text("Thêm công thức", fontSize = 12.sp)
             }
         }
 
@@ -444,7 +444,7 @@ private fun MealCard(
 
         if (meal.mealRecipes.isNullOrEmpty()) {
             Text(
-                text = "No recipes yet. Tap \"Add recipe\" to start.",
+                text = "Chưa có công thức nấu ăn",
                 color = TextSecondary,
                 fontSize = 12.sp,
                 modifier = Modifier.padding(horizontal = 2.dp)
@@ -468,7 +468,7 @@ private fun MealRecipeRow(
     onClick: () -> Unit
 ) {
     val recipe = mealRecipe.recipe
-    val name = recipe?.name ?: "Recipe #${mealRecipe.id}"
+    val name = recipe?.name ?: "Công thức #${mealRecipe.id}"
     val calories = mealRecipe.calories.takeIf { it > 0f } ?: recipe?.calories ?: 0f
     val protein = mealRecipe.protein.takeIf { it > 0f } ?: recipe?.protein ?: 0f
     val carbs   = mealRecipe.carbs.takeIf { it > 0f }   ?: recipe?.carbs   ?: 0f

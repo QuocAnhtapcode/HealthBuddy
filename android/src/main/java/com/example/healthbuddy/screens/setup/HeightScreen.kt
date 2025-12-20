@@ -86,7 +86,7 @@ fun HeightScreen(
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            "Back",
+                            "Quay lại",
                             color = AccentLime,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 14.sp
@@ -110,7 +110,7 @@ fun HeightScreen(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "What Is Your Height?",
+                text = "Chiều cao của bạn?",
                 color = TextPrimary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -120,9 +120,8 @@ fun HeightScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            // keep the original lorem ipsum style text
             Text(
-                text = "Your height helps us estimate BMI ranges and build healthier targets.",
+                text = "Chiều cao của bạn giúp chúng tôi ước tính phạm vi chỉ số BMI và xây dựng mục tiêu sức khỏe tốt hơn.",
                 color = TextSecondary,
                 fontSize = 14.sp,
                 lineHeight = 18.sp,
@@ -270,7 +269,7 @@ fun HeightScreen(
                     .width(220.dp)
             ) {
                 Text(
-                    "Continue",
+                    "Tiếp tục",
                     color = TextPrimary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold

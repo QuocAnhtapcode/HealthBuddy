@@ -38,13 +38,6 @@ fun ExerciseApp(
                             }
                         }
                     },
-                    onSleep = {
-                        navController.navigate(Sleep.route){
-                            popUpTo(navController.graph.id){
-                                inclusive = false
-                            }
-                        }
-                    },
                     onNoExerciseCapabilities = {
                         navController.navigate(ExerciseNotAvailable.route) {
                             popUpTo(navController.graph.id) {
@@ -94,16 +87,6 @@ fun ExerciseApp(
             }
             composable(Sleep.route){
                 //TODO : Create Sleep screen
-                ExerciseRoute(
-                    onSummary = {
-                        viewModel.sendExerciseSummary(it)
-                        navController.navigateToTopLevel(Summary, Summary.buildRoute(it))
-                    },
-                    onRestart = {
-                        navController.navigateToTopLevel(PreparingExercise)
-                    },
-                    onFinishActivity = onFinishActivity
-                )
             }
         }
     }

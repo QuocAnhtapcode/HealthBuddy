@@ -51,22 +51,20 @@ fun ProfileOverviewScreen(
     var showLogoutConfirm by remember { mutableStateOf(false) }
     var showChoosePlanConfirm by remember { mutableStateOf(false) }
 
-    // Confirm: Logout
     ConfirmActionDialog(
         visible = showLogoutConfirm,
-        title = "Logout?",
-        message = "You will need to log in again to access your account.",
-        confirmText = "Logout",
+        title = "Đăng xuất?",
+        message = "Bạn sẽ cần đăng nhập lại để truy cập vào tài khoản của mình.",
+        confirmText = "Đăng xuất",
         onDismiss = { showLogoutConfirm = false },
         onConfirm = onLogout
     )
 
-    // Confirm: Choose new plan
     ConfirmActionDialog(
         visible = showChoosePlanConfirm,
-        title = "Choose a new plan?",
-        message = "This will restart the setup flow so you can pick a new goal and plan.",
-        confirmText = "Continue",
+        title = "Chọn lộ trình mới?",
+        message = "Hành động này sẽ khởi động lại quá trình thiết lập để bạn chọn mục tiêu và lộ trình mới.",
+        confirmText = "Tiếp tục",
         onDismiss = { showChoosePlanConfirm = false },
         onConfirm = onChooseNewPlan
     )
@@ -116,35 +114,32 @@ fun ProfileOverviewScreen(
             Spacer(Modifier.height(8.dp))
             MenuItem(
                 icon = R.drawable.ic_profile,
-                label = "Update health info",
+                label = "Cập nhật thông số sức khỏe",
                 onClick = onEditProfile
             )
-
             MenuItem(
                 icon = R.drawable.ic_star,
-                label = "Choose new plan",
+                label = "Chọn lộ trình mới",
                 onClick = { showChoosePlanConfirm = true }
             )
-
             MenuItem(
                 icon = R.drawable.ic_lock,
-                label = "Privacy policy",
+                label = "Chính sách bảo mật",
                 onClick = onOpenPrivacy
             )
             MenuItem(
                 icon = R.drawable.ic_setting,
-                label = "Settings",
+                label = "Cài đặt",
                 onClick = onOpenSettings
             )
             MenuItem(
                 icon = R.drawable.ic_headphone,
-                label = "Help & support",
+                label = "Trợ giúp & Hỗ trợ",
                 onClick = onOpenHelp
             )
-
             MenuItem(
                 icon = R.drawable.ic_logout,
-                label = "Logout",
+                label = "Đăng xuất",
                 onClick = { showLogoutConfirm = true }
             )
 

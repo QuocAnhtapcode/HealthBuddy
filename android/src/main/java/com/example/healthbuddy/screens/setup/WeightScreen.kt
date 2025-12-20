@@ -68,7 +68,7 @@ fun WeightScreen(
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            "Back",
+                            "Quay lại",
                             color = AccentLime,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 14.sp
@@ -91,7 +91,7 @@ fun WeightScreen(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "What Is Your Weight?",
+                text = "Cân nặng của bạn?",
                 color = TextPrimary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -102,7 +102,7 @@ fun WeightScreen(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "Your weight helps us estimate calorie burn and set healthier targets.",
+                text = "Cân nặng của bạn giúp chúng tôi ước tính lượng calo tiêu hao và đặt ra các mục tiêu lành mạnh hơn.",
                 color = TextSecondary,
                 fontSize = 14.sp,
                 lineHeight = 18.sp,
@@ -237,7 +237,7 @@ fun WeightScreen(
                     .width(220.dp)
             ) {
                 Text(
-                    "Continue",
+                    "Tiếp tục",
                     color = TextPrimary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold

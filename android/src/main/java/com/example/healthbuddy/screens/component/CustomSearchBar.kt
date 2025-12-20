@@ -53,7 +53,7 @@ fun CustomSearchBar(
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_search),
-            contentDescription = "Search",
+            contentDescription = "Tìm kiếm",
             tint = Color.Unspecified,
             modifier = Modifier.size(20.dp)
         )
@@ -73,7 +73,7 @@ fun CustomSearchBar(
             decorationBox = { innerTextField ->
                 if (query.isEmpty()) {
                     Text(
-                        text = "Search",
+                        text = "Tìm kiếm",
                         color = TextSecondary,
                         fontSize = 14.sp
                     )
@@ -100,7 +100,7 @@ fun CustomSearchBar(
                 .padding(horizontal = 12.dp, vertical = 4.dp)
         ) {
             Text(
-                text = "Search",
+                text = "Tìm kiếm",
                 color = BackgroundDark,
                 fontSize = 12.sp,
                 fontWeight = FontWeight.SemiBold

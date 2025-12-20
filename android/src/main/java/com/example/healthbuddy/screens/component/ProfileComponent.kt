@@ -85,7 +85,7 @@ fun HealthStatsCard(
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Text(
-            text = "Today's body stats",
+            text = "Chỉ số cơ thể hôm nay",
             color = TextSecondary,
             fontSize = 12.sp
         )
@@ -97,15 +97,15 @@ fun HealthStatsCard(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             StatChip(
-                label = "Weight",
+                label = "Cân nặng",
                 value = healthInfo?.weight?.let { "${it.toInt()} kg" } ?: "--"
             )
             StatChip(
-                label = "Height",
+                label = "Chiều cao",
                 value = healthInfo?.height?.let { "${it.toInt()} cm" } ?: "--"
             )
             StatChip(
-                label = "Age",
+                label = "Tuổi",
                 value = age?.toString() ?: "--"
             )
         }
@@ -125,7 +125,7 @@ fun HealthStatsCard(
                 value = healthInfo?.bmr?.let { "${it.toInt()} kcal" } ?: "--"
             )
             StatChip(
-                label = "Fat",
+                label = "Tỉ lệ mỡ",
                 value = healthInfo?.fatPercentage?.let { "${it}%" } ?: "--"
             )
         }
@@ -208,10 +208,6 @@ fun LabeledField(
     }
 }
 
-/**
- * Dark theme text field giống style app:
- * nền SurfaceDark, border lime khi focus, chữ trắng.
- */
 @Composable
 fun DarkTextField(
     value: String,

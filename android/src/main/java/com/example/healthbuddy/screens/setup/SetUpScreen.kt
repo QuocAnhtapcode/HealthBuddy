@@ -58,7 +58,7 @@ fun SetUpScreen(
             Spacer(Modifier.height(32.dp))
 
             Text(
-                text = "Consistency Is\nThe Key To Progress.\nDon't Give Up!",
+                text = "Kiên trì là\nChìa khóa của sự tiến bộ.\nĐừng bỏ cuộc!",
                 color = AccentLime,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -78,7 +78,7 @@ fun SetUpScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Small, steady habits lead to real change. We’ll guide you step by step so you can stay focused and see progress over time.",
+                    text = "Những thói quen nhỏ và đều đặn sẽ tạo nên thay đổi thực sự. Chúng tôi sẽ dẫn dắt bạn từng bước để bạn luôn tập trung và nhìn thấy sự tiến bộ theo thời gian.",
                     color = TextPrimary,
                     fontSize = 14.sp,
                     textAlign = TextAlign.Center,
@@ -96,10 +96,9 @@ fun SetUpScreen(
                 modifier = Modifier
                     .padding(bottom = 32.dp)
                     .height(52.dp)
-                    .width(200.dp),
             ) {
                 Text(
-                    text = "Set up your profile",
+                    text = "Thiết lập chỉ số của bạn",
                     color = TextPrimary,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold

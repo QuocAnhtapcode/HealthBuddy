@@ -1,11 +1,13 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 package com.example.healthbuddy.screens.setup
 
+import androidx.compose.foundation.Image
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -38,31 +40,26 @@ fun GenderScreen(
     Scaffold(
         containerColor = BackgroundDark,
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 navigationIcon = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clickable { onBack.invoke() }
-                            .padding(start = 12.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
-                    ) {
-                        Icon(
+                    IconButton(onClick = { onBack.invoke() }) {
+                        Image(
                             painter = painterResource(R.drawable.ic_back),
-                            contentDescription = "Back",
-                            tint = AccentLime,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text(
-                            text = "Back",
-                            color = AccentLime,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
-                title = {},
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = SurfaceDark)
+                title = {
+                    Text(
+                        "Giới tính",
+                        color = AccentLime,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = SurfaceDark
+                )
             )
         }
     ) { innerPadding ->
@@ -71,12 +68,12 @@ fun GenderScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
                 .background(BackgroundDark),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "What’s Your Gender",
+                text = "Xác nhận giới tính của bạn để ứng dụng có thể lên kế hoạch phù hợp?",
                 color = TextPrimary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -86,46 +83,21 @@ fun GenderScreen(
                     .padding(horizontal = 24.dp)
             )
 
-            Spacer(Modifier.height(12.dp))
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(LavenderBand)
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "We use this information to personalize insights, goals, and health trends for you.",
-                    color = TextPrimary,
-                    fontSize = 14.sp,
-                    lineHeight = 18.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-
-            Spacer(Modifier.height(32.dp))
-
             GenderOptionCircle(
-                label = "Male",
+                label = "Nam",
                 selected = selectedGender == true,
                 selectedIcon = R.drawable.ic_male_selected,
                 unselectedIcon = R.drawable.ic_male_unselected,
                 onClick = { selectedGender = true }
             )
 
-            Spacer(Modifier.height(24.dp))
-
             GenderOptionCircle(
-                label = "Female",
+                label = "Nữ",
                 selected = selectedGender == false,
                 selectedIcon = R.drawable.ic_female_selected,
                 unselectedIcon = R.drawable.ic_female_unselected,
                 onClick = { selectedGender = false }
             )
-
-            Spacer(modifier = Modifier.weight(1f))
 
             Button(
                 onClick = { selectedGender?.let { onContinue(it) } },
@@ -134,17 +106,18 @@ fun GenderScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = ButtonBg),
                 modifier = Modifier
                     .padding(bottom = 32.dp)
-                    .height(52.dp)
+                    .height(56.dp)
                     .width(220.dp)
             ) {
                 Text(
-                    text = "Continue",
+                    text = "Tiếp tục",
                     color = TextPrimary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
         }
+
     }
 }
 
@@ -186,7 +159,7 @@ private fun GenderOptionCircle(
         Text(
             text = label,
             color = if (selected) AccentLime else TextPrimary,
-            fontSize = 16.sp,
+            fontSize = 24.sp,
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
         )
     }

@@ -12,3 +12,22 @@ data class CaloriesStat(
     val eatenFats: Float,
     val eatenProteins: Float
 )
+
+@JsonClass(generateAdapter = true)
+data class RunSession(
+    val id: Int,
+    val averageHeartRate: Int,
+    val totalDistanceMeters: Int,
+    val totalCalories: Int,
+    val durationMillis: Long,
+    val timestampMillis: Long
+)
+
+@JsonClass(generateAdapter = true)
+data class CreateRunSessionRequest(
+    val averageHeartRate: Int,
+    val totalDistanceMeters: Int,
+    val totalCalories: Int,
+    val durationMillis: Long,
+    val timestampMillis: Long
+)

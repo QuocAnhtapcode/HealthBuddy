@@ -53,7 +53,6 @@ import com.google.android.horologist.compose.layout.rememberResponsiveColumnPadd
 @Composable
 fun PreparingExerciseRoute(
     onStart: () -> Unit,
-    onSleep: () -> Unit,
     onFinishActivity: () -> Unit,
     onNoExerciseCapabilities: () -> Unit,
     onGoals: () -> Unit
@@ -92,10 +91,6 @@ fun PreparingExerciseRoute(
                 viewModel.startExercise()
                 onStart()
             },
-            onSleep = {
-                //Do viewModel things
-                onSleep()
-            },
             uiState = uiState,
             onGoals = { onGoals() },
             ambientState = ambientState
@@ -117,7 +112,6 @@ fun PreparingExerciseScreen(
     uiState: PreparingScreenState,
     ambientState: AmbientState,
     onStart: () -> Unit = {},
-    onSleep: () -> Unit = {},
     onGoals: () -> Unit = {}
 ) {
     val location = (uiState as? PreparingScreenState.Preparing)?.locationAvailability
@@ -169,22 +163,6 @@ fun PreparingExerciseScreen(
                                 "Start exercise"
                             ) },
                             onClick = onStart
-                        )
-                    }
-                }
-                item {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 6.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        CompactButton(
-                            label = { Text(
-                                "Start sleeping"
-                            ) },
-                            onClick = onSleep
                         )
                     }
                 }

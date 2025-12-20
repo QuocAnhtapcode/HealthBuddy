@@ -92,7 +92,7 @@ fun LoginScreen(
                 },
                 title = {
                     Text(
-                        "Log In",
+                        "Đăng nhập",
                         color = AccentLime,
                         fontWeight = FontWeight.Bold
                     )
@@ -109,28 +109,6 @@ fun LoginScreen(
                 .fillMaxSize()
                 .background(BackgroundDark)
         ) {
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = "Welcome",
-                color = TextPrimary,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = "Some description here",
-                color = TextSecondary,
-                fontSize = 14.sp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp, vertical = 8.dp),
-                textAlign = TextAlign.Center,
-                lineHeight = 18.sp
-            )
-
             Spacer(Modifier.height(8.dp))
             Column(
                 modifier = Modifier
@@ -139,7 +117,7 @@ fun LoginScreen(
                     .padding(horizontal = 20.dp, vertical = 20.dp)
             ) {
                 Text(
-                    text = "Username or email",
+                    text = "Username hoặc email",
                     color = InputText,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -166,7 +144,7 @@ fun LoginScreen(
 
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    text = "Password",
+                    text = "Mật khẩu",
                     color = InputText,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
@@ -207,7 +185,7 @@ fun LoginScreen(
                 Row(Modifier.fillMaxWidth()) {
                     Spacer(Modifier.weight(1f))
                     Text(
-                        text = "Forgot Password?",
+                        text = "Quên mật khẩu?",
                         color = TextPrimary,
                         modifier = Modifier
                             .clickable { onForgotPassword.invoke() }
@@ -217,7 +195,8 @@ fun LoginScreen(
                 }
             }
 
-            Spacer(Modifier.height(28.dp))
+            Spacer(Modifier.weight(1f))
+
             Button(
                 onClick = { onLogin(email.trim(), password) },
                 shape = RoundedCornerShape(28.dp),
@@ -229,12 +208,12 @@ fun LoginScreen(
                     .shadow(8.dp, RoundedCornerShape(28.dp),
                 clip = false)
             ) {
-                Text("Log In", color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text("Đăng nhập", color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
 
             Spacer(Modifier.height(20.dp))
             Text(
-                text = "or sign up with",
+                text = "hoặc đăng nhập với",
                 color = TextSecondary,
                 fontSize = 14.sp,
                 modifier = Modifier.fillMaxWidth(),
@@ -268,18 +247,16 @@ fun LoginScreen(
                     }
                 )
             }
-
-            Spacer(Modifier.weight(1f))
-
+            Spacer(Modifier.height(20.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 22.dp),
+                    .padding(bottom = 20.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text("Don’t have an account? ", color = TextSecondary)
+                Text("Bạn chưa có tài khoản? ", color = TextSecondary)
                 Text(
-                    "Sign Up",
+                    "Đăng ký",
                     color = AccentLime,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.clickable { onSignUp.invoke() }
@@ -288,8 +265,6 @@ fun LoginScreen(
         }
     }
 }
-
-
 
 @Preview(showSystemUi = true)
 @Composable

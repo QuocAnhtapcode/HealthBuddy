@@ -33,7 +33,7 @@ fun ConfirmActionDialog(
     title: String,
     message: String,
     confirmText: String,
-    cancelText: String = "Cancel",
+    cancelText: String = "Hủy",
     onDismiss: () -> Unit,
     onConfirm: () -> Unit
 ) {

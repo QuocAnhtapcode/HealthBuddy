@@ -2,6 +2,7 @@
 
 package com.example.healthbuddy.screens.setup
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -55,31 +56,26 @@ fun AgeScreen(
     Scaffold(
         containerColor = BackgroundDark,
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 navigationIcon = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clickable { onBack?.invoke() }
-                            .padding(start = 12.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
-                    ) {
-                        Icon(
+                    IconButton(onClick = { onBack?.invoke() }) {
+                        Image(
                             painter = painterResource(R.drawable.ic_back),
-                            contentDescription = "Back",
-                            tint = AccentLime,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text(
-                            "Back",
-                            color = AccentLime,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
-                title = {},
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = SurfaceDark)
+                title = {
+                    Text(
+                        "Tuổi",
+                        color = AccentLime,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = SurfaceDark
+                )
             )
         }
     ) { innerPadding ->
@@ -94,7 +90,7 @@ fun AgeScreen(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "How Old Are You?",
+                text = "Năm nay bạn bao nhiêu tuổi?",
                 color = TextPrimary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -102,22 +98,8 @@ fun AgeScreen(
                 modifier = Modifier.padding(horizontal = 24.dp)
             )
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(48.dp))
 
-            Text(
-                text = "Tell us your age so we can adapt goals, coaching and recommendations to you.",
-                color = TextSecondary,
-                fontSize = 14.sp,
-                lineHeight = 18.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(horizontal = 24.dp)
-                    .fillMaxWidth()
-            )
-
-            Spacer(Modifier.height(24.dp))
-
-            // This row mimics the top row in WeightScreen (73 74 75 76 77)
             Row(
                 modifier = Modifier
                     .padding(horizontal = 24.dp)

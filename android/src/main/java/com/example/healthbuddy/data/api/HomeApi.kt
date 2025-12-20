@@ -1,7 +1,11 @@
 package com.example.healthbuddy.data.api
 
 import com.example.healthbuddy.data.model.CaloriesStat
+import com.example.healthbuddy.data.model.CreateRunSessionRequest
+import com.example.healthbuddy.data.model.RunSession
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface HomeApi {
@@ -10,4 +14,13 @@ interface HomeApi {
         @Query("startDate") startDate: String,  // yyyy-MM-dd
         @Query("endDate") endDate: String
     ): List<CaloriesStat>
+
+    @GET("run-sessions")
+    suspend fun getRunSessions(): List<RunSession>
+
+    @POST("run-sessions")
+    suspend fun createRunSession(
+        @Body createRunSessionRequest: CreateRunSessionRequest
+    ): RunSession
+    
 }

@@ -35,7 +35,7 @@ fun RunFromWatchSection(latest: RunSession?) {
             .padding(16.dp)
     ) {
         Text(
-            text = "From your watch",
+            text = "Dữ liệu từ đồng hồ thông minh",
             color = TextPrimary,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold
@@ -45,7 +45,7 @@ fun RunFromWatchSection(latest: RunSession?) {
 
         if (latest == null) {
             Text(
-                text = "Waiting for data from Wear OS…",
+                text = "Chờ dữ liệu từ đồng hồ.....",
                 color = TextPrimary.copy(alpha = 0.8f),
                 fontSize = 13.sp
             )
@@ -54,23 +54,23 @@ fun RunFromWatchSection(latest: RunSession?) {
             val km = latest.totalDistanceMeters / 1000f
 
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("HR", color = TextPrimary.copy(alpha = 0.8f), fontSize = 12.sp)
+                Text("Nhịp tim trung bình", color = TextPrimary.copy(alpha = 0.8f), fontSize = 12.sp)
                 Text("${latest.averageHeartRate} bpm", color = TextPrimary, fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.height(6.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Distance", color = TextPrimary.copy(alpha = 0.8f), fontSize = 12.sp)
+                Text("Quãng đường", color = TextPrimary.copy(alpha = 0.8f), fontSize = 12.sp)
                 Text(String.format("%.2f km", km), color = TextPrimary, fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.height(6.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Calories", color = TextPrimary.copy(alpha = 0.8f), fontSize = 12.sp)
+                Text("Calo tiêu thụ", color = TextPrimary.copy(alpha = 0.8f), fontSize = 12.sp)
                 Text("${latest.totalCalories} kcal", color = TextPrimary, fontWeight = FontWeight.Bold)
             }
             Spacer(Modifier.height(6.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("Duration", color = TextPrimary.copy(alpha = 0.8f), fontSize = 12.sp)
-                Text("$minutes min", color = TextPrimary, fontWeight = FontWeight.Bold)
+                Text("Thời gian chạy", color = TextPrimary.copy(alpha = 0.8f), fontSize = 12.sp)
+                Text("$minutes phúc", color = TextPrimary, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -103,29 +103,29 @@ fun RunSessionCard(run: RunSession) {
         Spacer(Modifier.height(8.dp))
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Time", color = TextSecondary, fontSize = 12.sp)
+            Text("Thời gian", color = TextSecondary, fontSize = 12.sp)
             Text(runTimeText, color = TextPrimary, fontWeight = FontWeight.SemiBold)
         }
 
         Spacer(Modifier.height(4.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Distance", color = TextSecondary, fontSize = 12.sp)
+            Text("Quãng đường", color = TextSecondary, fontSize = 12.sp)
             Text(String.format("%.2f km", km), color = TextPrimary, fontWeight = FontWeight.SemiBold)
         }
         Spacer(Modifier.height(4.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Avg HR", color = TextSecondary, fontSize = 12.sp)
+            Text("Nhịp tim trung bình", color = TextSecondary, fontSize = 12.sp)
             Text("${run.averageHeartRate} bpm", color = TextPrimary, fontWeight = FontWeight.SemiBold)
         }
         Spacer(Modifier.height(4.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Calories", color = TextSecondary, fontSize = 12.sp)
+            Text("Calo tiêu thụ", color = TextSecondary, fontSize = 12.sp)
             Text("${run.totalCalories} kcal", color = TextPrimary, fontWeight = FontWeight.SemiBold)
         }
         Spacer(Modifier.height(4.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Duration", color = TextSecondary, fontSize = 12.sp)
-            Text("$minutes min", color = TextPrimary, fontWeight = FontWeight.SemiBold)
+            Text("Thời gian chạy", color = TextSecondary, fontSize = 12.sp)
+            Text("$minutes phút", color = TextPrimary, fontWeight = FontWeight.SemiBold)
         }
     }
 }

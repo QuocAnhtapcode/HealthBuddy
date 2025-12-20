@@ -124,7 +124,7 @@ fun ExerciseDetailScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             painter = painterResource(R.drawable.ic_back),
-                            contentDescription = "Back",
+                            contentDescription = "Quay lại",
                             tint = AccentLime
                         )
                     }
@@ -198,7 +198,7 @@ fun ExerciseDetailScreen(
                 if (isDurationBased) {
                     // --- Input theo thời gian ---
                     Text(
-                        text = "Duration (hours)",
+                        text = "Thời gian tập (giờ)",
                         color = BackgroundDark,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold
@@ -243,7 +243,7 @@ fun ExerciseDetailScreen(
                             modifier = Modifier.weight(1f)
                         )
                         SmallNumberField(
-                            label = "Weight (kg)",
+                            label = "Trọng lượng (kg)",
                             value = weightText,
                             onValueChange = { weightText = it.filter { c -> c.isDigit() || c == '.' } },
                             modifier = Modifier.weight(1.4f)
@@ -262,8 +262,6 @@ fun ExerciseDetailScreen(
 
                             val sessionExerciseId = sessionExercise?.id
                             if (sessionExerciseId == null) {
-                                // Không có record để update -> báo lỗi hoặc quay lại
-                                // (tuỳ bạn)
                                 return@Button
                             }
 
@@ -339,13 +337,13 @@ fun ExerciseDetailScreen(
                     } else {
                         if(isUpdateScreen){
                             Text(
-                                text = "Update",
+                                text = "Cập nhật",
                                 color = AccentLime,
                                 fontWeight = FontWeight.SemiBold
                             )
                         }else{
                             Text(
-                                text = "Add to plan",
+                                text = "Thêm vào kế hoạch",
                                 color = AccentLime,
                                 fontWeight = FontWeight.SemiBold
                             )

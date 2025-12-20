@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.healthbuddy.R
@@ -71,7 +72,7 @@ fun ChooseGoalScreen(
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            "Back",
+                            "Quay lại",
                             color = AccentLime,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 14.sp
@@ -93,7 +94,7 @@ fun ChooseGoalScreen(
             Spacer(Modifier.height(16.dp))
 
             Text(
-                text = "What’s Your Main Goal?",
+                text = "Mục tiêu của bạn là gì?",
                 color = TextPrimary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -104,7 +105,7 @@ fun ChooseGoalScreen(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "Choose the goal that best describes what you want from your workouts.",
+                text = "Hãy chọn mục tiêu mô tả chính xác nhất những gì bạn muốn đạt được từ các buổi tập luyện của mình.",
                 color = TextSecondary,
                 fontSize = 14.sp,
                 lineHeight = 18.sp,
@@ -122,24 +123,24 @@ fun ChooseGoalScreen(
                     .fillMaxWidth()
             ) {
                 GoalCard(
-                    title = "Lose Weight",
-                    subtitle = "Burn fat, slim down and feel lighter.",
+                    title = "Giảm cân",
+                    subtitle = "Đốt cháy mỡ thừa, thon gọn vóc dáng và cảm thấy nhẹ nhàng hơn.",
                     selected = selectedGoal == 1,
                     onClick = { selectedGoal = 1 }
                 )
                 Spacer(Modifier.height(14.dp))
 
                 GoalCard(
-                    title = "Build Muscle",
-                    subtitle = "Increase strength and gain lean muscle.",
+                    title = "Tăng cơ",
+                    subtitle = "Tăng cường sức mạnh và phát triển cơ bắp săn chắc.",
                     selected = selectedGoal == 2,
                     onClick = { selectedGoal = 2 }
                 )
                 Spacer(Modifier.height(14.dp))
 
                 GoalCard(
-                    title = "Maintain Weight",
-                    subtitle = "Stay fit, healthy and keep your current shape.",
+                    title = "Duy trì cân nặng",
+                    subtitle = "Giữ cơ thể cân đối, khỏe mạnh và duy trì vóc dáng hiện tại.",
                     selected = selectedGoal == 3,
                     onClick = { selectedGoal = 3 }
                 )
@@ -161,7 +162,7 @@ fun ChooseGoalScreen(
                     .width(220.dp)
             ) {
                 Text(
-                    "Continue",
+                    "Tiếp tục",
                     color = TextPrimary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -207,4 +208,9 @@ private fun GoalCard(
             )
         }
     }
+}
+@Preview(showSystemUi = true)
+@Composable
+fun ChooseGoalPreview(){
+    ChooseGoalScreen()
 }

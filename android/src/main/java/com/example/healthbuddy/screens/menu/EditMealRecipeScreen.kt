@@ -96,7 +96,7 @@ fun EditMealRecipeScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             painter = painterResource(R.drawable.ic_back),
-                            contentDescription = "Back",
+                            contentDescription = "Quay lại",
                             tint = AccentLime
                         )
                     }
@@ -183,7 +183,7 @@ private fun RecipeHeader(mealRecipe: MealRecipe) {
             .padding(16.dp)
     ) {
         Text(
-            text = mealRecipe.recipe?.name ?: "No name",
+            text = mealRecipe.recipe?.name ?: "Chưa có tên",
             color = AccentLime,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
@@ -205,10 +205,10 @@ private fun RecipeHeader(mealRecipe: MealRecipe) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            MacroChip(label = "Calories",value = mealRecipe.calories, unit = "kcal")
-            MacroChip(label = "Protein",value = mealRecipe.protein,  unit = "g")
-            MacroChip(label = "Carbs",value = mealRecipe.carbs,    unit = "g")
-            MacroChip(label = "Fat",value = mealRecipe.fat,      unit = "g")
+            MacroChip(label = "Calo",value = mealRecipe.calories, unit = "kcal")
+            MacroChip(label = "Đạm",value = mealRecipe.protein, unit = "g")
+            MacroChip(label = "Tinh bột",value = mealRecipe.carbs, unit = "g")
+            MacroChip(label = "Chất béo",value = mealRecipe.fat, unit = "g")
         }
     }
 }

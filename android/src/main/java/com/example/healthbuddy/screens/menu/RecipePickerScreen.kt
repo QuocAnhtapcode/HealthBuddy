@@ -60,7 +60,6 @@ fun RecipePickerScreen(
 ) {
     val ui by vm.ui.collectAsState()
 
-    // Page đầu tiên
     LaunchedEffect(Unit) {
         vm.loadRecipesFirstPage()
     }
@@ -71,7 +70,7 @@ fun RecipePickerScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Choose a recipe",
+                        text = "Chọn một công thức",
                         color = TextPrimary,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 18.sp
@@ -81,7 +80,7 @@ fun RecipePickerScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             painter = painterResource(R.drawable.ic_back),
-                            contentDescription = "Back",
+                            contentDescription = "Quay lại",
                             tint = AccentLime
                         )
                     }
@@ -158,7 +157,7 @@ fun RecipePickerScreen(
                                 )
                             } else if (!ui.loadingRecipes && ui.recipes.isNotEmpty()) {
                                 Text(
-                                    text = "No more recipes",
+                                    text = "Hết",
                                     color = TextSecondary,
                                     fontSize = 12.sp,
                                     modifier = Modifier

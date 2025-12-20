@@ -69,7 +69,7 @@ fun RecipeDetailScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Recipe detail",
+                        text = "Chi tiết công thức",
                         color = TextPrimary,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold
@@ -79,7 +79,7 @@ fun RecipeDetailScreen(
                     IconButton(onClick = onBack) {
                         Icon(
                             painter = painterResource(R.drawable.ic_back),
-                            contentDescription = "Back",
+                            contentDescription = "Quay lại",
                             tint = AccentLime
                         )
                     }
@@ -128,7 +128,7 @@ fun RecipeDetailScreen(
                         )
                     } else {
                         Text(
-                            text = "Add to meal",
+                            text = "Thêm vào bữa ăn",
                             color = TextPrimary,
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold
@@ -189,7 +189,7 @@ fun RecipeDetailScreen(
                 Spacer(Modifier.height(6.dp))
 
                 Text(
-                    text = recipe.type ?: "Recipe",
+                    text = recipe.type ?: "Công thức",
                     color = TextSecondary,
                     fontSize = 13.sp
                 )
@@ -205,16 +205,16 @@ fun RecipeDetailScreen(
                         value = recipe.calories.toInt().toString()
                     )
                     MacroChip(
-                        label = "Protein",
-                        value = "${recipe.protein} g"
+                        label = "Đạm",
+                        value = "${"%.2f".format(recipe.protein)} g"
                     )
                     MacroChip(
-                        label = "Carbs",
-                        value = "${recipe.carbs} g"
+                        label = "Tinh bột",
+                        value = "${"%.2f".format(recipe.carbs)} g"
                     )
                     MacroChip(
-                        label = "Fat",
-                        value = "${recipe.fat} g"
+                        label = "Chất béo",
+                        value = "${"%.2f".format(recipe.fat)} g"
                     )
                 }
             }
@@ -232,7 +232,7 @@ fun RecipeDetailScreen(
                         .padding(14.dp)
                 ) {
                     Text(
-                        text = "Description",
+                        text = "Mô tả",
                         color = AccentLime,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold
@@ -251,7 +251,7 @@ fun RecipeDetailScreen(
 
             // -------- INGREDIENTS --------
             Text(
-                text = "Ingredients",
+                text = "Nguyên liệu",
                 color = TextPrimary,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -272,7 +272,7 @@ fun RecipeDetailScreen(
                 }
             }
 
-            Spacer(Modifier.height(80.dp)) // chừa chỗ cho bottom button
+            Spacer(Modifier.height(80.dp))
         }
     }
 }

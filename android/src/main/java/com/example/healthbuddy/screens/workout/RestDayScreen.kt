@@ -63,7 +63,7 @@ fun RestDayScreen() {
             Spacer(Modifier.height(16.dp))
 
             Text(
-                text = "Rest day",
+                text = "Ngày nghỉ",
                 color = AccentLime,
                 fontSize = 22.sp,
                 fontWeight = FontWeight.ExtraBold

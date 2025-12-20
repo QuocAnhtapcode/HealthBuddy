@@ -123,7 +123,7 @@ fun TodayWorkoutScreen(
                     .background(BackgroundDark),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No workout session for today.", color = TextSecondary)
+                Text("Chưa có lịch tập cho hôm nay.", color = TextSecondary)
             }
         }
 
@@ -172,7 +172,7 @@ fun TodayWorkoutScreen(
 
                     item {
                         Text(
-                            text = "Added exercises",
+                            text = "Thêm bài tập",
                             color = TextPrimary,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
@@ -191,14 +191,14 @@ fun TodayWorkoutScreen(
                             ) {
                                 Column {
                                     Text(
-                                        text = "No exercises added yet.",
+                                        text = "Chưa có bài tập.",
                                         color = TextPrimary,
                                         fontSize = 14.sp,
                                         fontWeight = FontWeight.SemiBold
                                     )
                                     Spacer(Modifier.height(6.dp))
                                     Text(
-                                        text = "Choose a muscle group above and tap Add to pick an exercise.",
+                                        text = "Chọn nhóm cơ và tiến hành thêm bài tập.",
                                         color = TextSecondary,
                                         fontSize = 12.sp,
                                         lineHeight = 16.sp
@@ -258,7 +258,7 @@ private fun FilterMuscleGroupBar(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = selectedGroup?.name ?: "Choose muscle group",
+                        text = selectedGroup?.name ?: "Chọn nhóm cơ",
                         color = if (selectedGroup == null) TextSecondary else TextPrimary,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -310,7 +310,7 @@ private fun FilterMuscleGroupBar(
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
-                contentDescription = "Add exercise",
+                contentDescription = "Thêm bài tập",
                 tint = AccentLime
             )
         }
@@ -328,7 +328,7 @@ private fun TodayWorkoutStatusHeader(
     val ratioRaw = if (target > 0f) estimated / target else 0f
     val progress by animateFloatAsState(
         targetValue = ratioRaw.coerceIn(0f, 1f),
-        label = "sessionProgress"
+        label = "Tiến độ tập luyện"
     )
 
     Column(
@@ -337,7 +337,7 @@ private fun TodayWorkoutStatusHeader(
             .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)
     ) {
         Text(
-            text = "Workout today",
+            text = "Lịch tập hôm nay",
             color = AccentLime,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold

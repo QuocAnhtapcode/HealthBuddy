@@ -52,7 +52,7 @@ fun HomeRunScreen(homeViewModel: HomeViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .background(BackgroundDark),
-        contentPadding = PaddingValues(bottom = 92.dp) // tránh bị bottom bar che
+        contentPadding = PaddingValues(bottom = 92.dp)
     ) {
         item {
             val ui by homeViewModel.ui.collectAsState()
@@ -62,8 +62,7 @@ fun HomeRunScreen(homeViewModel: HomeViewModel) {
                 onStartDateChange = { homeViewModel.setRange(it, ui.range.endDate) },
                 onEndDateChange = { homeViewModel.setRange(ui.range.startDate, it) },
                 onApply = { homeViewModel.applyRange() },
-                onModeChange = { homeViewModel.setChartMode(it) },
-                onRetry = { homeViewModel.applyRange() }
+                onModeChange = { homeViewModel.setChartMode(it) }
             )
 
         }
@@ -76,7 +75,7 @@ fun HomeRunScreen(homeViewModel: HomeViewModel) {
         item {
             Spacer(Modifier.height(10.dp))
             Text(
-                text = "Run history",
+                text = "Lịch sử vận động từ đồng hồ",
                 color = AccentLime,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,

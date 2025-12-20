@@ -94,7 +94,7 @@ fun RegisterScreen(
                 },
                 title = {
                     Text(
-                        "Create Account",
+                        "Đăng ký",
                         color = AccentLime,
                         fontWeight = FontWeight.Bold
                     )
@@ -111,39 +111,25 @@ fun RegisterScreen(
                 .fillMaxSize()
                 .background(BackgroundDark)
         ) {
-            Spacer(Modifier.height(16.dp))
-            Text(
-                text = "Let's Start!",
-                color = TextPrimary,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
-                textAlign = TextAlign.Center
-            )
-
-            Spacer(Modifier.height(8.dp))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(LavenderBand)
                     .padding(horizontal = 20.dp, vertical = 20.dp)
             ) {
-                FieldLabel("Username")
+                FieldLabel("Tên đăng nhập")
                 TextField(
                     value = fullName,
                     onValueChange = { fullName = it },
-                    placeholder = { Text("Your username") },
+                    placeholder = { Text("Tên đăng nhập") },
                     singleLine = true,
                     shape = RoundedCornerShape(22.dp),
                     colors = tfColors(),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(56.dp)
+                        .height(56.dp),
                 )
-
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(8.dp))
                 FieldLabel("Email")
                 TextField(
                     value = emailOrPhone,
@@ -156,9 +142,8 @@ fun RegisterScreen(
                         .fillMaxWidth()
                         .height(56.dp)
                 )
-
-                Spacer(Modifier.height(16.dp))
-                FieldLabel("Password")
+                Spacer(Modifier.height(8.dp))
+                FieldLabel("Mật khẩu")
                 TextField(
                     value = password,
                     onValueChange = { password = it },
@@ -182,8 +167,8 @@ fun RegisterScreen(
                         .height(56.dp)
                 )
 
-                Spacer(Modifier.height(16.dp))
-                FieldLabel("Confirm Password")
+                Spacer(Modifier.height(8.dp))
+                FieldLabel("Xác nhận mật khẩu")
                 TextField(
                     value = confirm,
                     onValueChange = { confirm = it },
@@ -209,21 +194,22 @@ fun RegisterScreen(
                 )
                 if (confirmError) {
                     Text(
-                        text = "Passwords do not match",
+                        text = "Mật khẩu không khớp",
                         color = Color(0xFFFF6B6B),
-                        fontSize = 12.sp,
+                        fontSize = 10.sp,
                         modifier = Modifier.padding(top = 6.dp, start = 8.dp)
                     )
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(8.dp))
             TermsParagraph(
                 onTerms = onTerms,
                 onPrivacy = onPrivacy
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.weight(1f))
+
             Button(
                 onClick = { if (!confirmError) onRegister(fullName.trim(), emailOrPhone.trim(), password) },
                 enabled = fullName.isNotBlank() && emailOrPhone.isNotBlank() && password.isNotBlank() && !confirmError,
@@ -235,42 +221,40 @@ fun RegisterScreen(
                     .height(56.dp)
                     .shadow(8.dp, RoundedCornerShape(28.dp), clip = false)
             ) {
-                Text("Sign Up", color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                Text("Đăng ký", color = TextPrimary, fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
 
-            Spacer(Modifier.height(20.dp))
+            Spacer(Modifier.height(12.dp))
             Text(
-                text = "or sign up with",
+                text = "hoặc đăng ký với",
                 color = TextSecondary,
                 fontSize = 14.sp,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
 
-            Spacer(Modifier.height(14.dp))
+            Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 BrandCircle(R.drawable.ic_google) { onGoogle.invoke() }
-                Spacer(Modifier.width(18.dp))
+                Spacer(Modifier.width(16.dp))
                 BrandCircle(R.drawable.ic_facebook) { onFacebook.invoke() }
-                Spacer(Modifier.width(18.dp))
+                Spacer(Modifier.width(16.dp))
                 BrandCircle(R.drawable.ic_fingerprint) { onBiometric.invoke() }
             }
-
-            Spacer(Modifier.weight(1f))
-
+            Spacer(Modifier.height(8.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 22.dp),
+                    .padding(bottom = 12.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                Text("Already have an account? ", color = TextSecondary)
+                Text("Bạn đã có tài khoản? ", color = TextSecondary)
                 Text(
-                    "Log in",
+                    "Đăng nhập",
                     color = AccentLime,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.clickable { onLogin.invoke() }
@@ -285,7 +269,7 @@ private fun FieldLabel(text: String) {
     Text(
         text = text,
         color = InputText,
-        fontSize = 16.sp,
+        fontSize = 12.sp,
         fontWeight = FontWeight.SemiBold,
         modifier = Modifier.padding(bottom = 8.dp, top = 4.dp)
     )
@@ -308,17 +292,17 @@ private fun TermsParagraph(
     LocalUriHandler.current
     val annotated = buildAnnotatedString {
         withStyle(SpanStyle(color = TextSecondary)) {
-            append("By continuing, you agree to ")
+            append("Bằng việc đăng ký, bạn đã đồng ý với ")
         }
         pushStringAnnotation(tag = "terms", annotation = "terms")
         withStyle(SpanStyle(color = AccentLime, fontWeight = FontWeight.SemiBold)) {
-            append("Terms of Use")
+            append("Điều khoản sử dụng")
         }
         pop()
-        withStyle(SpanStyle(color = TextSecondary)) { append(" and ") }
+        withStyle(SpanStyle(color = TextSecondary)) { append(" và ") }
         pushStringAnnotation(tag = "privacy", annotation = "privacy")
         withStyle(SpanStyle(color = AccentLime, fontWeight = FontWeight.SemiBold)) {
-            append("Privacy Policy")
+            append("Chính sách bảo mật")
         }
         pop()
         withStyle(SpanStyle(color = TextSecondary)) { append(".") }
@@ -328,7 +312,7 @@ private fun TermsParagraph(
         textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp)
+            .padding(horizontal = 16.dp)
             .clickable { /* to enable span clicks area */ },
         fontSize = 14.sp
     )

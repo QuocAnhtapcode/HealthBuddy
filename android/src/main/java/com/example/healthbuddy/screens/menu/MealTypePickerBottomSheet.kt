@@ -77,7 +77,7 @@ fun MealTypePickerBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "Choose meal type",
+                text = "Chọn bữa ăn",
                 color = TextPrimary,
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
@@ -88,10 +88,10 @@ fun MealTypePickerBottomSheet(
             Spacer(Modifier.height(16.dp))
 
             val options = listOf(
-                MealType.BREAKFAST to "Breakfast",
-                MealType.LUNCH     to "Lunch",
-                MealType.DINNER    to "Dinner",
-                MealType.SNACK     to "Snack"
+                MealType.BREAKFAST to "Bữa sáng",
+                MealType.LUNCH     to "Bữa trưa",
+                MealType.DINNER    to "Bữa tối",
+                MealType.SNACK     to "Ăn vặt"
             )
 
             options.forEachIndexed { index, (type, title) ->
@@ -112,7 +112,7 @@ fun MealTypePickerBottomSheet(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "Cancel",
+                text = "Hủy",
                 color = AccentLime,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -150,10 +150,10 @@ private fun MealTypeRow(
         ) {
             Text(
                 text = when (type) {
-                    MealType.BREAKFAST -> "B"
-                    MealType.LUNCH     -> "L"
-                    MealType.DINNER    -> "D"
-                    MealType.SNACK     -> "S"
+                    MealType.BREAKFAST -> "S"
+                    MealType.LUNCH     -> "Tr"
+                    MealType.DINNER    -> "T"
+                    MealType.SNACK     -> "V"
                 },
                 color = AccentLime,
                 fontWeight = FontWeight.Bold,
@@ -172,10 +172,10 @@ private fun MealTypeRow(
             )
             Text(
                 text = when (type) {
-                    MealType.BREAKFAST -> "Start your day right"
-                    MealType.LUNCH     -> "Midday fuel"
-                    MealType.DINNER    -> "End the day with balance"
-                    MealType.SNACK     -> "Small bite, big energy"
+                    MealType.BREAKFAST -> "Bắt đầu ngày mới"
+                    MealType.LUNCH     -> "Nạp năng lượng buổi trưa"
+                    MealType.DINNER    -> "Kết thúc ngày"
+                    MealType.SNACK     -> "Một chút bổ sung"
                 },
                 color = TextSecondary,
                 fontSize = 12.sp

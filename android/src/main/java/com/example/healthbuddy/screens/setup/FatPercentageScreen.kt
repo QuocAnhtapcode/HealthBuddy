@@ -79,13 +79,13 @@ fun FatPercentageScreen(
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_back),
-                            contentDescription = "Back",
+                            contentDescription = "Quay lại",
                             tint = AccentLime,
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            "Back",
+                            "Quay lại",
                             color = AccentLime,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 14.sp
@@ -108,7 +108,7 @@ fun FatPercentageScreen(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "What Is Your Fat Percentage?",
+                text = "Tỉ lệ mỡ cơ thể của bạn?",
                 color = TextPrimary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -119,7 +119,7 @@ fun FatPercentageScreen(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "Your fat percentage helps us estimate calorie burn and set healthier targets.",
+                text = "Tỷ lệ mỡ cơ thể giúp chúng tôi ước tính lượng calo tiêu hao và đặt ra các mục tiêu lành mạnh hơn.",
                 color = TextSecondary,
                 fontSize = 14.sp,
                 lineHeight = 18.sp,
@@ -218,7 +218,7 @@ fun FatPercentageScreen(
                     .width(220.dp)
             ) {
                 Text(
-                    "Continue",
+                    "Tiếp tục",
                     color = TextPrimary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold

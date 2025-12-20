@@ -75,7 +75,7 @@ fun QuizScreen(
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            "Back",
+                            "Quay lại",
                             color = AccentLime,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 14.sp
@@ -226,7 +226,6 @@ fun QuizScreen(
                         modifier = Modifier
                             .padding(bottom = 32.dp, top = 8.dp)
                             .height(52.dp)
-                            .width(220.dp)
                     ) {
                         if (uiState.isSubmitting) {
                             CircularProgressIndicator(
@@ -235,14 +234,14 @@ fun QuizScreen(
                             )
                             Spacer(Modifier.width(8.dp))
                             Text(
-                                "Submitting...",
+                                "Đang cập nhật",
                                 color = TextPrimary,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.SemiBold
                             )
                         } else {
                             Text(
-                                "Continue",
+                                "Tiếp tục",
                                 color = TextPrimary,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold

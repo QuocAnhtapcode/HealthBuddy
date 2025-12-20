@@ -18,15 +18,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,7 +38,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,12 +57,11 @@ fun CaloriesChartsSection(
     onStartDateChange: (String) -> Unit,
     onEndDateChange: (String) -> Unit,
     onApply: () -> Unit,
-    onModeChange: (CaloriesChartMode) -> Unit,
-    onRetry: () -> Unit
+    onModeChange: (CaloriesChartMode) -> Unit
 ) {
     Column(Modifier.fillMaxWidth()) {
         Text(
-            text = "Calories charts",
+            text = "Biểu đồ Calo",
             color = AccentLime,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
@@ -103,25 +98,6 @@ fun CaloriesChartsSection(
             CaloriesChartMode.BAR_NET ->
                 NetCaloriesBarChartCard(ui.caloriesStats)
         }
-        /*
-        when {
-            ui.loadingStats -> LoadingCard()
-            ui.statsError != null -> ErrorCard(ui.statsError, onRetry)
-            ui.caloriesStats.isEmpty() -> EmptyCard("No stats in this range.")
-            else -> {
-                when (ui.chartMode) {
-                    CaloriesChartMode.LINE_EATEN_BURNED ->
-                        CaloriesLineChartCard(ui.caloriesStats)
-
-                    CaloriesChartMode.BAR_MACROS ->
-                        MacrosStackedBarChartCard(ui.caloriesStats)
-
-                    CaloriesChartMode.BAR_NET ->
-                        NetCaloriesBarChartCard(ui.caloriesStats)
-                }
-            }
-        }
-         */
     }
 }
 
@@ -144,7 +120,7 @@ private fun CaloriesLineChartCard(stats: List<CaloriesStat>) {
             .padding(16.dp)
     ) {
         Text(
-            text = "Eaten vs Burned",
+            text = "Nạp vào vs Tiêu thụ",
             color = TextPrimary,
             fontSize = 16.sp,
             fontWeight = FontWeight.SemiBold
@@ -202,8 +178,8 @@ private fun CaloriesLineChartCard(stats: List<CaloriesStat>) {
 
         // legend
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            LegendDot(color = AccentLime, label = "Eaten")
-            LegendDot(color = LavenderBand, label = "Burned")
+            LegendDot(color = AccentLime, label = "Nạp vào")
+            LegendDot(color = LavenderBand, label = "Tiêu thụ")
         }
     }
 }
@@ -227,19 +203,19 @@ private fun DateRangeCard(
             .background(SurfaceDark)
             .padding(14.dp)
     ) {
-        Text("Query by date", color = TextPrimary, fontWeight = FontWeight.SemiBold)
+        Text("Truy vấn theo ngày", color = TextPrimary, fontWeight = FontWeight.SemiBold)
 
         Spacer(Modifier.height(10.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             DatePickPill(
-                label = "Start date",
+                label = "Ngày bắt đầu",
                 value = startDate,
                 onClick = { showStartPicker = true },
                 modifier = Modifier.weight(1f)
             )
             DatePickPill(
-                label = "End date",
+                label = "Ngày kết thúc",
                 value = endDate,
                 onClick = { showEndPicker = true },
                 modifier = Modifier.weight(1f)
@@ -256,13 +232,13 @@ private fun DateRangeCard(
                 .align(Alignment.End)
                 .height(44.dp)
         ) {
-            Text("Apply", color = TextPrimary)
+            Text("Tìm kiếm", color = TextPrimary)
         }
     }
 
     if (showStartPicker) {
         SingleDatePickerDialog(
-            title = "Select start date",
+            title = "Chọn ngày bắt đầu",
             initialDate = startDate,
             onDismiss = { showStartPicker = false },
             onConfirm = { picked ->
@@ -274,7 +250,7 @@ private fun DateRangeCard(
 
     if (showEndPicker) {
         SingleDatePickerDialog(
-            title = "Select end date",
+            title = "Chọn ngày kết thúc",
             initialDate = endDate,
             onDismiss = { showEndPicker = false },
             onConfirm = { picked ->
@@ -318,21 +294,16 @@ private fun SingleDatePickerDialog(
                     }
                 }
             ) {
-                Text("OK", color = AccentLime)
+                Text("OK", color = BackgroundDark)
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel", color = TextSecondary)
+                Text("Hủy", color = BackgroundDark)
             }
         }
     ) {
-        Column(Modifier.padding(16.dp)) {
-            Text(title, color = TextPrimary, fontWeight = FontWeight.SemiBold)
-            Spacer(Modifier.height(10.dp))
-
-            DatePicker(state = state)
-        }
+        DatePicker(state = state)
     }
 }
 
@@ -395,7 +366,7 @@ private fun ChartModeTabs(
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         TabPill(
-            text = "Eaten vs Burned",
+            text = "Nạp vs Tiêu thụ",
             selected = selected == CaloriesChartMode.LINE_EATEN_BURNED,
             onClick = { onSelect(CaloriesChartMode.LINE_EATEN_BURNED) },
             modifier = Modifier.weight(1f)
@@ -407,7 +378,7 @@ private fun ChartModeTabs(
             modifier = Modifier.weight(1f)
         )
         TabPill(
-            text = "Net",
+            text = "Thực nhận",
             selected = selected == CaloriesChartMode.BAR_NET,
             onClick = { onSelect(CaloriesChartMode.BAR_NET) },
             modifier = Modifier.weight(0.8f)
@@ -449,7 +420,7 @@ private fun NetCaloriesBarChartCard(stats: List<CaloriesStat>) {
             .background(SurfaceDark)
             .padding(16.dp)
     ) {
-        Text("Net calories (Eaten - Burned)", color = TextPrimary, fontWeight = FontWeight.SemiBold)
+        Text("Calo thực nhận (Nạp vào - Tiêu thụ)", color = TextPrimary, fontWeight = FontWeight.SemiBold)
         Spacer(Modifier.height(10.dp))
 
         Canvas(modifier = Modifier.fillMaxWidth().height(140.dp)) {
@@ -486,8 +457,7 @@ private fun NetCaloriesBarChartCard(stats: List<CaloriesStat>) {
         }
 
         Spacer(Modifier.height(8.dp))
-        Text(
-            "Positive = surplus, Negative = deficit",
+        Text("Dương = dư thừa, Âm = thâm hụt",
             color = TextSecondary,
             fontSize = 12.sp
         )
@@ -506,7 +476,7 @@ private fun MacrosStackedBarChartCard(stats: List<CaloriesStat>) {
             .background(SurfaceDark)
             .padding(16.dp)
     ) {
-        Text("Macros per day (stacked)", color = TextPrimary, fontWeight = FontWeight.SemiBold)
+        Text("Macros mỗi ngày", color = TextPrimary, fontWeight = FontWeight.SemiBold)
         Spacer(Modifier.height(10.dp))
 
         Canvas(modifier = Modifier.fillMaxWidth().height(160.dp)) {
@@ -558,14 +528,14 @@ private fun MacrosStackedBarChartCard(stats: List<CaloriesStat>) {
 
         Spacer(Modifier.height(10.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            LegendDot(AccentLime, "Protein")
-            LegendDot(Color.White.copy(alpha = 0.25f), "Carbs")
-            LegendDot(LavenderBand, "Fat")
+            LegendDot(AccentLime, "Đạm")
+            LegendDot(Color.White.copy(alpha = 0.25f), "Tinh bột")
+            LegendDot(LavenderBand, "Chất béo")
         }
     }
 }
 @Composable
-private fun LegendDot(color: androidx.compose.ui.graphics.Color, label: String) {
+private fun LegendDot(color: Color, label: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier

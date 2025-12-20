@@ -48,7 +48,7 @@ fun UpdateHealthInfoScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Update heath info",
+                        "Cập nhật chỉ số cơ thể",
                         color = TextPrimary,
                         fontWeight = FontWeight.Bold
                     )
@@ -57,7 +57,7 @@ fun UpdateHealthInfoScreen(
                     IconButton(onClick = { onBack?.invoke() }) {
                         Icon(
                             painterResource(R.drawable.ic_back),
-                            contentDescription = "Back",
+                            contentDescription = "Quay lại",
                             tint = AccentLime
                         )
                     }
@@ -97,7 +97,7 @@ fun UpdateHealthInfoScreen(
                         ) {
                             Icon(
                                 painter = painterResource(R.drawable.ic_edit_avatar),
-                                contentDescription = "Change avatar",
+                                contentDescription = "Thay đổi ảnh đại diện",
                                 tint = BackgroundDark,
                                 modifier = Modifier.size(14.dp)
                             )
@@ -113,14 +113,14 @@ fun UpdateHealthInfoScreen(
             }
             Spacer(Modifier.height(16.dp))
             Text(
-                text = "Body metrics",
+                text = "Chỉ số cơ thể",
                 color = TextPrimary,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
             )
 
-            LabeledField("Height (cm)") {
+            LabeledField("Chiều cao (cm)") {
                 DarkTextField(
                     value = height,
                     onValueChange = { new ->
@@ -130,7 +130,7 @@ fun UpdateHealthInfoScreen(
                 )
             }
 
-            LabeledField("Weight (kg)") {
+            LabeledField("Cân nặng (kg)") {
                 DarkTextField(
                     value = weight,
                     onValueChange = { new ->
@@ -140,7 +140,7 @@ fun UpdateHealthInfoScreen(
                 )
             }
 
-            LabeledField("Body fat (%)") {
+            LabeledField("Tỉ lệ mỡ (%)") {
                 DarkTextField(
                     value = fat,
                     onValueChange = { new ->
@@ -178,7 +178,7 @@ fun UpdateHealthInfoScreen(
                 )
             ) {
                 Text(
-                    text = "Save changes",
+                    text = "Lưu",
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 15.sp
                 )

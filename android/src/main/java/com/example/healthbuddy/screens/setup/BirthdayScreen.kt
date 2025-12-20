@@ -1,8 +1,8 @@
 package com.example.healthbuddy.screens.setup
 
 import android.app.DatePickerDialog
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,28 +15,26 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -64,9 +62,9 @@ fun BirthdayScreen(
 
     // default = today
     val calendar = remember { Calendar.getInstance() }
-    var year by remember { mutableStateOf(calendar.get(Calendar.YEAR)) }
-    var month by remember { mutableStateOf(calendar.get(Calendar.MONTH) + 1) } // 1..12
-    var day by remember { mutableStateOf(calendar.get(Calendar.DAY_OF_MONTH)) }
+    var year by remember { mutableIntStateOf(calendar.get(Calendar.YEAR)) }
+    var month by remember { mutableIntStateOf(calendar.get(Calendar.MONTH) + 1) } // 1..12
+    var day by remember { mutableIntStateOf(calendar.get(Calendar.DAY_OF_MONTH)) }
 
     fun openDatePicker() {
         val dlg = DatePickerDialog(
@@ -80,7 +78,6 @@ fun BirthdayScreen(
             month - 1,
             day
         )
-        // optional: limit max date = today
         dlg.datePicker.maxDate = System.currentTimeMillis()
         dlg.show()
     }
@@ -88,31 +85,26 @@ fun BirthdayScreen(
     Scaffold(
         containerColor = BackgroundDark,
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 navigationIcon = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .clickable { onBack?.invoke() }
-                            .padding(start = 12.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
-                    ) {
-                        Icon(
+                    IconButton(onClick = { onBack?.invoke() }) {
+                        Image(
                             painter = painterResource(R.drawable.ic_back),
-                            contentDescription = "Back",
-                            tint = AccentLime,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(Modifier.width(4.dp))
-                        Text(
-                            "Back",
-                            color = AccentLime,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 14.sp
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 },
-                title = {},
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = SurfaceDark)
+                title = {
+                    Text(
+                        "Sinh nhật",
+                        color = AccentLime,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = SurfaceDark
+                )
             )
         }
     ) { innerPadding ->
@@ -127,7 +119,7 @@ fun BirthdayScreen(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "When Is Your Birthday?",
+                text = "Bạn sinh ngày bao nhiêu?",
                 color = TextPrimary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -138,7 +130,7 @@ fun BirthdayScreen(
             Spacer(Modifier.height(12.dp))
 
             Text(
-                text = "We use your birth date to estimate your age and personalize your plan.",
+                text = "Chúng tôi dùng sinh nhật để xác định tuổi và lên kế hoạch cá nhân cho bạn.",
                 color = TextSecondary,
                 fontSize = 14.sp,
                 lineHeight = 18.sp,
@@ -175,20 +167,12 @@ fun BirthdayScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column {
-                        Text(
-                            text = "Select your birthday",
-                            color = TextPrimary,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Spacer(Modifier.height(4.dp))
-                        Text(
-                            text = "Tap to open calendar",
-                            color = TextSecondary,
-                            fontSize = 13.sp
-                        )
-                    }
+                    Text(
+                        text = "Chọn sinh nhật của bạn",
+                        color = TextPrimary,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
                     Icon(
                         painter = painterResource(R.drawable.ic_setting), // your calendar icon
                         contentDescription = null,
@@ -210,7 +194,7 @@ fun BirthdayScreen(
                     .width(220.dp)
             ) {
                 Text(
-                    "Continue",
+                    "Tiếp tục",
                     color = TextPrimary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold

@@ -121,7 +121,8 @@ object NetworkModule {
     fun provideRetrofit(client: OkHttpClient): Retrofit =
         Retrofit.Builder()
             //.baseUrl("http://10.0.2.2:8000/api/") //Emulator -> Laptop
-            .baseUrl("http://192.168.53.102:8000/api/")
+            .baseUrl("http://192.168.53.102:8000/api/") //Home
+            //.baseUrl("http://192.168.101.231:8000/api/") //FSA
             .client(client)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()

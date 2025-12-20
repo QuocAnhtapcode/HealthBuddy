@@ -48,7 +48,7 @@ fun WelcomeScreen(
             )
 
             Text(
-                text = "Welcome to HealthBuddy",
+                text = "Chào mừng đến với HealthBuddy",
                 color = AccentLime,
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
@@ -59,7 +59,7 @@ fun WelcomeScreen(
             Spacer(modifier = Modifier.height(12.dp))
 
             Text(
-                text = "Track your health, manage your sleep, and stay connected with your well-being — all in one place.",
+                text = "Theo dõi sức khỏe, quản lý giấc ngủ và duy trì kết nối với trạng thái khỏe mạnh của bạn — tất cả chỉ trong một ứng dụng.",
                 color = TextSecondary,
                 fontSize = 14.sp,
                 lineHeight = 20.sp,
@@ -79,7 +79,7 @@ fun WelcomeScreen(
                     .height(56.dp)
             ) {
                 Text(
-                    text = "Get Started",
+                    text = "Bắt đầu",
                     color = TextPrimary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -88,7 +88,7 @@ fun WelcomeScreen(
             Spacer(modifier = Modifier.height(60.dp))
 
             Text(
-                text = "Version 1.0.0",
+                text = "Phiên bản 1.0.0",
                 color = TextSecondary.copy(alpha = 0.6f),
                 fontSize = 12.sp
             )

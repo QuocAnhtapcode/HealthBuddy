@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.healthbuddy.common.DataPaths
 import com.example.healthbuddy.data.model.CaloriesStat
+import com.example.healthbuddy.data.model.RunSession
 import com.example.healthbuddy.data.repo.HomeRepository
 import com.google.android.gms.wearable.CapabilityClient
 import com.google.android.gms.wearable.CapabilityInfo
@@ -19,14 +20,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-
-data class RunSession(
-    val averageHeartRate: Int,
-    val totalDistanceMeters: Int,
-    val totalCalories: Int,
-    val durationMillis: Long,
-    val timestampMillis: Long
-)
 
 enum class CaloriesChartMode { LINE_EATEN_BURNED, BAR_MACROS, BAR_NET }
 

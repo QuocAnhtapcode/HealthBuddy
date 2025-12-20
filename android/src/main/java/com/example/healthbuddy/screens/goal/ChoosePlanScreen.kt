@@ -77,7 +77,7 @@ fun ChoosePlanScreen(
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            "Back",
+                            "Quay lại",
                             color = AccentLime,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 14.sp
@@ -99,7 +99,7 @@ fun ChoosePlanScreen(
             Spacer(Modifier.height(16.dp))
 
             Text(
-                text = "Choose Your Plan",
+                text = "Chọn kế hoạch tập luyện",
                 color = TextPrimary,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -157,7 +157,7 @@ fun ChoosePlanScreen(
                     .width(220.dp)
             ) {
                 Text(
-                    "Continue",
+                    "Tiếp tục",
                     color = TextPrimary,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
@@ -200,14 +200,6 @@ private fun PlanCard(
 
             Spacer(Modifier.height(4.dp))
 
-            Text(
-                text = "${plan.startDate}  -  ${plan.endDate}",
-                color = textColor,
-                fontSize = 12.sp
-            )
-
-            Spacer(Modifier.height(8.dp))
-
             // Summary line
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
@@ -218,7 +210,7 @@ private fun PlanCard(
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    text = "$daysPerWeek days / week",
+                    text = "$daysPerWeek ngày/tuần",
                     color = textColor,
                     fontSize = 12.sp
                 )
@@ -233,7 +225,7 @@ private fun PlanCard(
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    text = "${totalCalories.toInt()} Cal / week (approx.)",
+                    text = "${totalCalories.toInt()} Calo/tuần",
                     color = textColor,
                     fontSize = 12.sp
                 )
