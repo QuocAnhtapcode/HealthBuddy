@@ -169,6 +169,28 @@ class MenuViewModel @Inject constructor(
         }
     }
 
+    private suspend fun refreshMenu() {
+        repo.getMenuForToday()
+            .onSuccess { newMenu ->
+                _ui.update { it.copy(menu = newMenu, error = null) }
+            }
+            .onFailure { e ->
+                _ui.update { it.copy(error = "Lỗi cập nhật dữ liệu: ${e.message}") }
+            }
+    }
+
+    fun deleteRecipeInMeal(id: Long) {
+        viewModelScope.launch {
+            repo.deleteRecipeInMeal(id)
+                .onSuccess {
+                    refreshMenu()
+                }
+                .onFailure { e ->
+                    _ui.update { it.copy(error = e.message) }
+                }
+        }
+    }
+
     fun startEditingMealRecipe(mealRecipe: MealRecipe) {
         _ui.update { it.copy(editingMealRecipe = mealRecipe) }
     }
@@ -199,9 +221,7 @@ class MenuViewModel @Inject constructor(
             )
         }
     }
-
-
-
+    
     // --- 6) Gửi request updateMealRecipe lên backend ---
     fun saveEditedMealRecipe(onDone: () -> Unit = {}) {
         val editing = _ui.value.editingMealRecipe ?: return

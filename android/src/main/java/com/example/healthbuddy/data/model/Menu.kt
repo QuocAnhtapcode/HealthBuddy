@@ -4,7 +4,6 @@ import com.example.healthbuddy.screens.menu.MealType
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-// ---------------------- MENU ROOT ----------------------
 @JsonClass(generateAdapter = true)
 data class Menu(
     val id: Long,
@@ -28,7 +27,6 @@ data class MenuPlan(
     val targetFat: Float
 )
 
-// ---------------------- MEAL ----------------------
 @JsonClass(generateAdapter = true)
 data class Meal(
     val id: Long,
@@ -37,7 +35,6 @@ data class Meal(
     val mealRecipes: List<MealRecipe>?=mutableListOf()
 )
 
-// ---------------------- MEAL RECIPE ----------------------
 @JsonClass(generateAdapter = true)
 data class MealRecipe(
     val id: Long,
@@ -54,7 +51,6 @@ data class MealRecipe(
     val protein: Float=0f
 )
 
-// ---------------------- RECIPE ----------------------
 @JsonClass(generateAdapter = true)
 data class Recipe(
     val id: Long,
@@ -73,7 +69,6 @@ data class Recipe(
     val recipeIngredients: List<RecipeIngredient>
 )
 
-// ---------------------- INGREDIENT MODELS ----------------------
 @JsonClass(generateAdapter = true)
 data class Ingredient(
     val id: Long,

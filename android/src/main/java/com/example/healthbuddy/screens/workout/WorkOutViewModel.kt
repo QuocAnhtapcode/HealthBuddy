@@ -111,7 +111,25 @@ class WorkoutViewModel @Inject constructor(
     fun clearError() {
         _ui.update { it.copy(error = null) }
     }
-
+    fun deleteExerciseInSession(
+        exerciseId: Long,
+        onDone: () -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            repo.deleteSessionExercise(exerciseId)
+                .onSuccess {
+                    reloadAfterAdd(onDone)
+                }
+                .onFailure { e ->
+                    _ui.update {
+                        it.copy(
+                            addingExercise = false,
+                            error = e.message ?: "Cannot delete exercise"
+                        )
+                    }
+                }
+        }
+    }
     // ---- 3) Add exercise dạng thời gian (hours) ----
     fun addExerciseAsDuration(
         exerciseId: Long,

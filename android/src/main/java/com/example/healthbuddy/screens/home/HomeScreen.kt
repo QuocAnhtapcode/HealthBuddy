@@ -1,11 +1,9 @@
 package com.example.healthbuddy.screens.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,12 +20,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.healthbuddy.ui.theme.AccentLime
 import com.example.healthbuddy.ui.theme.BackgroundDark
-import com.example.healthbuddy.ui.theme.TextPrimary
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun HomeRunScreen(homeViewModel: HomeViewModel) {
+fun HomeScreen(homeViewModel: HomeViewModel) {
     val ui by homeViewModel.ui.collectAsState()
 
     // load stats: ví dụ lấy 7 ngày gần nhất
@@ -42,6 +39,9 @@ fun HomeRunScreen(homeViewModel: HomeViewModel) {
             startDate = start.format(fmt),
             endDate = end.format(fmt)
         )
+
+        homeViewModel.loadRunHistory()
+        homeViewModel.applyRange()
     }
 
     DisposableEffect(Unit) {

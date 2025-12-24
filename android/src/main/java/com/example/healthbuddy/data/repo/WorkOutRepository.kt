@@ -39,6 +39,8 @@ class WorkOutRepository
         }
     suspend fun addSessionExercise(body: SessionExerciseCreateRequest): Result<Unit> =
         runCatching { api.addSessionExercise(body) }
+    suspend fun deleteSessionExercise(id: Long): Result<Unit> =
+        runCatching { api.deleteSessionExercise(id) }
     suspend fun updateSessionExercise(id: Long, body: SessionExerciseCreateRequest): Result<Unit> =
         runCatching { api.updateSessionExercise(id, body) }
 }

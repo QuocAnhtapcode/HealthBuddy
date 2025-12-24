@@ -1,15 +1,19 @@
 package com.example.healthbuddy.data.api
 
+import com.example.healthbuddy.data.model.ChatHistoryItem
+import com.example.healthbuddy.data.model.ChatHistoryResponse
+import com.example.healthbuddy.data.model.ChatMenuPreview
 import com.example.healthbuddy.data.model.EditMealRecipeIngredientRequest
 import com.example.healthbuddy.data.model.Meal
 import com.example.healthbuddy.data.model.MealRecipe
 import com.example.healthbuddy.data.model.MealRecipeIngredient
 import com.example.healthbuddy.data.model.MealRecipeRequest
-import com.example.healthbuddy.data.model.MealUpdateRequest
 import com.example.healthbuddy.data.model.Menu
 import com.example.healthbuddy.data.model.RecipePage
-import com.example.healthbuddy.screens.menu.MealType
+import com.example.healthbuddy.data.model.RecommendChatRequest
+import com.example.healthbuddy.data.model.SaveChatMenuRequest
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -17,7 +21,6 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface MenuApi {
-
     // 1) Lấy menu cho hôm nay
     @GET("menu/today")
     suspend fun getMenuForToday(): Menu
@@ -48,13 +51,37 @@ interface MenuApi {
         @Body mealRecipe: MealRecipeRequest
     ): MealRecipe
 
+    @DELETE("meal-recipes/{id}")
+    suspend fun deleteMealInRecipe(
+        @Path("id") id: Long
+    )
+
     // 5) Update lại khối lượng nguyên liệu trong mealRecipe
     @PUT("meal-recipe-ingredients/{id}")
     suspend fun updateRecipeInMeal(
         @Path("id") id: Long,
         @Body editMealRecipeIngredientRequest: EditMealRecipeIngredientRequest
     ): MealRecipeIngredient
+
+    @GET("chat-history")
+    suspend fun getChatHistory(): ChatHistoryResponse
+
+    @POST("menu/recommend-chat")
+    suspend fun recommendMenuByChat(
+        @Body request: RecommendChatRequest
+    ): ChatHistoryItem
+
+    @GET("chat-history/{id}/menu")
+    suspend fun getMenuFromChat(
+        @Path("id") chatId: Long
+    ): ChatMenuPreview
+
+    @POST("chat-history")
+    suspend fun saveChatMenu(
+        @Body request: SaveChatMenuRequest
+    )
 }
+
 
 
 

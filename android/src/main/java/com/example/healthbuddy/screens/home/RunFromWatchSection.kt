@@ -17,6 +17,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.healthbuddy.data.model.RunSession
 import com.example.healthbuddy.ui.theme.AccentLime
 import com.example.healthbuddy.ui.theme.LavenderBand
 import com.example.healthbuddy.ui.theme.SurfaceDark
@@ -70,7 +71,7 @@ fun RunFromWatchSection(latest: RunSession?) {
             Spacer(Modifier.height(6.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("Thời gian chạy", color = TextPrimary.copy(alpha = 0.8f), fontSize = 12.sp)
-                Text("$minutes phúc", color = TextPrimary, fontWeight = FontWeight.Bold)
+                Text("$minutes phút", color = TextPrimary, fontWeight = FontWeight.Bold)
             }
         }
     }

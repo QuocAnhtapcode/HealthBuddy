@@ -50,10 +50,13 @@ import com.example.healthbuddy.screens.auth.ForgotPasswordScreen
 import com.example.healthbuddy.screens.auth.LoginScreen
 import com.example.healthbuddy.screens.auth.RegisterScreen
 import com.example.healthbuddy.screens.auth.ResetPasswordScreen
+import com.example.healthbuddy.screens.chatbot.ChatBotViewModel
+import com.example.healthbuddy.screens.chatbot.ChatMenuDetailScreen
+import com.example.healthbuddy.screens.chatbot.ChatScreen
 import com.example.healthbuddy.screens.goal.ChooseGoalScreen
 import com.example.healthbuddy.screens.goal.ChoosePlanScreen
 import com.example.healthbuddy.screens.goal.GoalViewModel
-import com.example.healthbuddy.screens.home.HomeRunScreen
+import com.example.healthbuddy.screens.home.HomeScreen
 import com.example.healthbuddy.screens.home.HomeViewModel
 import com.example.healthbuddy.screens.menu.EditMealRecipeScreen
 import com.example.healthbuddy.screens.menu.MenuTodayScreen
@@ -127,6 +130,7 @@ fun MainApp(
     goalViewModel: GoalViewModel = hiltViewModel(),
     homeViewModel: HomeViewModel = hiltViewModel(),
     menuViewModel: MenuViewModel = hiltViewModel(),
+    chatBotViewModel: ChatBotViewModel = hiltViewModel(),
     workoutViewModel: WorkoutViewModel = hiltViewModel()
 ) {
     val nav = rememberNavController()
@@ -415,6 +419,7 @@ fun MainApp(
                         homeViewModel = homeViewModel,
                         userInfoViewModel = userInfoViewModel,
                         menuViewModel = menuViewModel,
+                        chatBotViewModel = chatBotViewModel,
                         workoutViewModel = workoutViewModel
                     )
                 }
@@ -436,7 +441,10 @@ private fun shouldHideBottomBar(route: String?): Boolean {
         "workout/add/{exerciseId}",
         "workout/detail/{exerciseId}",
 
-        "profile/edit"
+        "profile/edit",
+
+        "chat",
+        "chat/menu/{chatId}"
     )
 }
 
@@ -448,6 +456,7 @@ fun MainScreenGraph(
     homeViewModel: HomeViewModel,
     userInfoViewModel: UserInfoViewModel,
     menuViewModel: MenuViewModel,
+    chatBotViewModel: ChatBotViewModel,
     workoutViewModel: WorkoutViewModel
 ) {
     val tabNav: NavHostController = rememberNavController()
@@ -488,7 +497,7 @@ fun MainScreenGraph(
         ) {
 
             composable(Tab.Home.route) {
-                HomeRunScreen(homeViewModel=homeViewModel)
+                HomeScreen(homeViewModel=homeViewModel)
             }
 
             navigation(
@@ -571,6 +580,9 @@ fun MainScreenGraph(
                         onOpenRecipePicker = { meal ->
                             tabNav.navigate("nutrition/recipePicker/${meal.id}")
                         },
+                        onOpenChat = {
+                            tabNav.navigate("chat")
+                        },
                         onEditMealRecipe = { mealId, mealRecipeId ->
                             tabNav.navigate("nutrition/meal/$mealId/recipe/$mealRecipeId")
                         }
@@ -649,6 +661,29 @@ fun MainScreenGraph(
                                 popUpTo(0) { inclusive = true }
                                 launchSingleTop = true
                             }
+                        }
+                    )
+                }
+
+                composable("chat") {
+                    ChatScreen(
+                        viewModel = chatBotViewModel,
+                        onBack = { tabNav.popBackStack() },
+                        onOpenMenuDetail = { chatId ->
+                            tabNav.navigate("chat/menu/$chatId")
+                        }
+                    )
+                }
+
+                composable("chat/menu/{chatId}") { backStack ->
+                    val chatId = backStack.arguments?.getString("chatId")!!.toLong()
+                    ChatMenuDetailScreen(
+                        viewModel = chatBotViewModel,
+                        chatId = chatId,
+                        onBack = { tabNav.popBackStack() },
+                        onChosenDone = {
+                            // chọn xong -> quay về chat, hoặc về MenuToday tùy bạn
+                            tabNav.popBackStack() // về ChatScreen
                         }
                     )
                 }

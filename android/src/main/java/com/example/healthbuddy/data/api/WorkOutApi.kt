@@ -6,6 +6,7 @@ import com.example.healthbuddy.data.model.GoalWithPlans
 import com.example.healthbuddy.data.model.SessionExerciseCreateRequest
 import com.example.healthbuddy.data.model.TodayWorkoutSession
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -42,7 +43,10 @@ interface WorkOutApi {
     suspend fun addSessionExercise(
         @Body body: SessionExerciseCreateRequest
     )
-
+    @DELETE("session-exercises/{id}")
+    suspend fun deleteSessionExercise(
+        @Path("id") id: Long
+    )
     @PUT("session-exercises/{id}")
     suspend fun updateSessionExercise(
         @Path("id") id: Long,

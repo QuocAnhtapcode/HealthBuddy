@@ -23,8 +23,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -32,7 +34,11 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -43,7 +49,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -210,7 +218,10 @@ fun TodayWorkoutScreen(
                         items(addedExercises, key = { it.id }) { item ->
                             SessionExerciseRow(
                                 sessionExercise = item,
-                                onClick = { onOpenExerciseDetail(item.exercise.id) }
+                                onClick = { onOpenExerciseDetail(item.exercise.id) },
+                                onDelete = {
+                                    viewModel.deleteExerciseInSession(item.id)
+                                }
                             )
                         }
                     }
@@ -411,63 +422,143 @@ private fun TodayWorkoutStatusHeader(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SessionExerciseRow(
     sessionExercise: SessionExercise,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onDelete: () -> Unit
 ) {
     val exercise = sessionExercise.exercise
+    val name = exercise.name
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .background(BackgroundDark.copy(alpha = 0.7f))
-            .clickable(onClick = onClick)
-            .padding(horizontal = 10.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (!exercise.imageUrl.isNullOrBlank()) {
-            AsyncImage(
-                model = exercise.imageUrl,
-                contentDescription = exercise.name,
-                modifier = Modifier
-                    .size(60.dp),
-                contentScale = ContentScale.Fit
-            )
-        } else {
+    var showDeleteConfirm by remember { mutableStateOf(false) }
+
+    val dismissState = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            if (value == SwipeToDismissBoxValue.EndToStart) {
+                showDeleteConfirm = true
+                false // không dismiss item ngay
+            } else false
+        }
+    )
+
+    LaunchedEffect(showDeleteConfirm) {
+        if (!showDeleteConfirm && dismissState.currentValue != SwipeToDismissBoxValue.Settled) {
+            dismissState.reset()
+        }
+    }
+
+    if (showDeleteConfirm) {
+        AlertDialog(
+            onDismissRequest = { showDeleteConfirm = false },
+            containerColor = SurfaceDark,
+            title = { Text("Xác nhận xóa", color = TextPrimary) },
+            text = { Text("Bạn có muốn xóa \"$name\" không?", color = TextSecondary) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onDelete()
+                        showDeleteConfirm = false
+                    }
+                ) {
+                    Text("Xóa", color = Color.Red, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteConfirm = false }) {
+                    Text("Hủy", color = TextPrimary)
+                }
+            }
+        )
+    }
+
+    SwipeToDismissBox(
+        state = dismissState,
+        enableDismissFromStartToEnd = false,
+        backgroundContent = {
+            val isDismissing = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
+            val alpha by animateFloatAsState(if (isDismissing) 1f else 0f, label = "alpha")
+            val scale by animateFloatAsState(if (isDismissing) 1.2f else 0.8f, label = "scale")
+
             Box(
                 modifier = Modifier
-                    .size(60.dp)
-                    .clip(CircleShape)
-                    .background(LavenderBand),
-                contentAlignment = Alignment.Center
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(if (isDismissing) Color.Red.copy(alpha = 0.8f) else Color.Transparent)
+                    .padding(horizontal = 20.dp),
+                contentAlignment = Alignment.CenterEnd
             ) {
                 Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = null,
-                    tint = BackgroundDark
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Xóa",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .scale(scale)
+                        .graphicsLayer(alpha = alpha)
                 )
             }
         }
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(18.dp))
+                .background(BackgroundDark.copy(alpha = 0.7f))
+                .clickable(onClick = onClick)
+                .padding(horizontal = 10.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (!exercise.imageUrl.isNullOrBlank()) {
+                AsyncImage(
+                    model = exercise.imageUrl,
+                    contentDescription = exercise.name,
+                    modifier = Modifier.size(60.dp),
+                    contentScale = ContentScale.Fit
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .background(LavenderBand),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        tint = BackgroundDark
+                    )
+                }
+            }
 
-        Spacer(Modifier.width(10.dp))
+            Spacer(Modifier.width(10.dp))
 
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = exercise.name,
-                color = TextPrimary,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(Modifier.height(2.dp))
-            Text(
-                text = "${sessionExercise.estimatedCalories.toInt()} kcal",
-                color = TextSecondary,
-                fontSize = 11.sp
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = exercise.name,
+                    color = TextPrimary,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(Modifier.height(2.dp))
+
+                val detail = buildString {
+                    append("${sessionExercise.estimatedCalories.toInt()} kcal")
+                    sessionExercise.reps?.let { r -> append(" · $r reps") }
+                    sessionExercise.sets?.let { s -> append(" · $s sets") }
+                    sessionExercise.weightUsed?.let { w -> append(" · ${w.toInt()} kg") }
+                    sessionExercise.hours?.let { h -> append(" · ${"%.2f".format(h)} h") }
+                }
+
+                Text(
+                    text = detail,
+                    color = TextSecondary,
+                    fontSize = 11.sp
+                )
+            }
         }
     }
 }

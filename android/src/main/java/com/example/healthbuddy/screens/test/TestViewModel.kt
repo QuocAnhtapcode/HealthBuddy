@@ -1,7 +1,6 @@
 package com.example.healthbuddy.screens.test
 
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.example.healthbuddy.common.DataPaths
 import com.google.android.gms.wearable.CapabilityClient
@@ -18,7 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 @HiltViewModel
-class WorkoutViewModel @Inject constructor(
+class TestViewModel @Inject constructor(
     private val dataClient: DataClient,
     private val messageClient: MessageClient,
     private val capabilityClient: CapabilityClient

@@ -145,19 +145,17 @@ private fun MealTypeRow(
             modifier = Modifier
                 .size(32.dp)
                 .clip(CircleShape)
-                .background(LavenderBand.copy(alpha = 0.4f)),
+                .background(BackgroundDark.copy(alpha = 0.8f)),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = when (type) {
-                    MealType.BREAKFAST -> "S"
-                    MealType.LUNCH     -> "Tr"
-                    MealType.DINNER    -> "T"
-                    MealType.SNACK     -> "V"
+                    MealType.BREAKFAST  -> "\uD83E\uDDC0" // 🥐
+                    MealType.LUNCH ->  "\uD83C\uDF72" // 🍲
+                    MealType.DINNER ->  "\uD83C\uDF7D" // 🍽
+                    MealType.SNACK ->  "\uD83E\uDD67" // 🧇
                 },
-                color = AccentLime,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp
+                fontSize = 20.sp
             )
         }
 
