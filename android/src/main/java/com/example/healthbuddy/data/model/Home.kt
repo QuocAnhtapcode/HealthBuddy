@@ -14,6 +14,14 @@ data class CaloriesStat(
 )
 
 @JsonClass(generateAdapter = true)
+data class WatchCaloriesStat(
+    val date: String,          // MM-dd
+    val burned: Float,
+    val eaten: Float,
+    val net: Float             // eaten - burned
+)
+
+@JsonClass(generateAdapter = true)
 data class RunSession(
     val id: Int,
     val averageHeartRate: Int,

@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter
 fun HomeScreen(homeViewModel: HomeViewModel) {
     val ui by homeViewModel.ui.collectAsState()
 
-    // load stats: ví dụ lấy 7 ngày gần nhất
+    // load stats: lấy 7 ngày gần nhất
     LaunchedEffect(Unit) {
         homeViewModel.startListening()
 

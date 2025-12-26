@@ -5,5 +5,5 @@ object DataPaths {
 
     const val MSG_PATH = "/msg/text"
 
-    const val PHONE_CAPABILITY = "phone_app_capability"
+    const val CALORIES_7DAYS = "/stats/calories_7days"
 }

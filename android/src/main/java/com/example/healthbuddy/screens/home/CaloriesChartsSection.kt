@@ -801,9 +801,9 @@ private fun MacrosStackedBarChartCard(stats: List<CaloriesStat>) {
                         .padding(10.dp),
                     title = s.date,
                     lines = listOf(
-                        "Protein: ${s.eatenProteins.toInt()} g",
-                        "Carbs:   ${s.eatenCarbs.toInt()} g",
-                        "Fat:     ${s.eatenFats.toInt()} g"
+                        "Đạm:     ${s.eatenProteins.toInt()} g",
+                        "Tinh bột:${s.eatenCarbs.toInt()} g",
+                        "Chất béo:${s.eatenFats.toInt()} g"
                     )
                 )
             }

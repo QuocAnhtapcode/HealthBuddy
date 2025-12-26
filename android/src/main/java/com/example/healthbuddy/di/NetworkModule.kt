@@ -121,10 +121,10 @@ object NetworkModule {
     fun provideRetrofit(client: OkHttpClient): Retrofit =
         Retrofit.Builder()
             //.baseUrl("http://10.0.2.2:8000/api/") //Emulator -> Laptop
-            //.baseUrl("http://192.168.53.102:8000/api/") //Home
+            .baseUrl("http://192.168.53.102:8000/api/") //Home
             //.baseUrl("http://192.168.101.231:8000/api/") //FSA
             //.baseUrl("http://192.168.1.237:8000/api/") //Tiny coffee
-            .baseUrl("http://10.16.144.120:8000/api/") //FPT
+            //.baseUrl("http://10.16.144.120:8080/api/") //Chung
             .client(client)
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()

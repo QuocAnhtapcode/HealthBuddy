@@ -6,6 +6,7 @@ import com.example.healthbuddy.common.DataPaths
 import com.example.healthbuddy.data.model.CaloriesStat
 import com.example.healthbuddy.data.model.CreateRunSessionRequest
 import com.example.healthbuddy.data.model.RunSession
+import com.example.healthbuddy.data.model.WatchCaloriesStat
 import com.example.healthbuddy.data.repo.HomeRepository
 import com.google.android.gms.wearable.CapabilityClient
 import com.google.android.gms.wearable.CapabilityInfo
@@ -15,6 +16,9 @@ import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
+import com.google.android.gms.wearable.PutDataMapRequest
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.Types
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,6 +50,11 @@ data class HomeUiState(
     val uploadingRun: Boolean = false,
     val runError: String? = null
 )
+private val moshi = Moshi.Builder().build()
+private val watchCaloriesAdapter =
+    moshi.adapter<List<WatchCaloriesStat>>(
+        Types.newParameterizedType(List::class.java, WatchCaloriesStat::class.java)
+    )
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -111,13 +120,26 @@ class HomeViewModel @Inject constructor(
 
             repository.getCaloriesStat(startDate, endDate)
                 .onSuccess { list ->
-                    _ui.update { it.copy(loadingStats = false, caloriesStats = list, statsError = null) }
+                    _ui.update {
+                        it.copy(
+                            loadingStats = false,
+                            caloriesStats = list,
+                            statsError = null
+                        )
+                    }
+                    sendCaloriesStatsToWatch(list)
                 }
                 .onFailure { e ->
-                    _ui.update { it.copy(loadingStats = false, statsError = e.message ?: "Load stats failed") }
+                    _ui.update {
+                        it.copy(
+                            loadingStats = false,
+                            statsError = e.message ?: "Load stats failed"
+                        )
+                    }
                 }
         }
     }
+
 
     override fun onMessageReceived(event: MessageEvent) {
         // Nếu sau này bạn dùng MessageClient thay DataItem thì parse ở đây
@@ -208,4 +230,30 @@ class HomeViewModel @Inject constructor(
     fun clearRunError() {
         _ui.update { it.copy(runError = null) }
     }
+
+    private fun sendCaloriesStatsToWatch(stats: List<CaloriesStat>) {
+        if (stats.isEmpty()) return
+
+        // Map sang format cho watch
+        val watchStats = stats
+            .sortedBy { it.date } // đảm bảo thứ tự
+            .map {
+                WatchCaloriesStat(
+                    date = it.date.substring(5), // MM-dd
+                    burned = it.burnedCalories,
+                    eaten = it.eatenCalories,
+                    net = it.eatenCalories - it.burnedCalories
+                )
+            }
+
+        val json = watchCaloriesAdapter.toJson(watchStats)
+
+        val request = PutDataMapRequest.create(DataPaths.CALORIES_7DAYS).apply {
+            dataMap.putString("payload", json)
+            dataMap.putLong("updatedAt", System.currentTimeMillis()) // 🔥 force sync
+        }.asPutDataRequest().setUrgent()
+
+        dataClient.putDataItem(request)
+    }
+
 }

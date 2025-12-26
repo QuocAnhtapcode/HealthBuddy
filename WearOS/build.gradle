@@ -131,4 +131,7 @@ dependencies {
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.10.2"
 
   implementation "androidx.health.connect:connect-client:1.2.0-alpha02"
+
+  implementation(libs.moshi.kotlin)
+  ksp(libs.moshi.kotlin.codegen)
 }

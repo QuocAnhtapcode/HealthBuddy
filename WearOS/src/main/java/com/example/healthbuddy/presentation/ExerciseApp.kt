@@ -2,6 +2,8 @@ package com.example.healthbuddy.presentation
 
 import ExerciseGoalsRoute
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
@@ -14,6 +16,7 @@ import com.example.healthbuddy.app.navigateToTopLevel
 import com.example.healthbuddy.presentation.dialogs.ExerciseNotAvailable
 import com.example.healthbuddy.presentation.exercise.ExerciseRoute
 import com.example.healthbuddy.presentation.exercise.ExerciseViewModel
+import com.example.healthbuddy.presentation.home.WatchHomeViewModel
 import com.example.healthbuddy.presentation.preparing.PreparingExerciseRoute
 import com.example.healthbuddy.presentation.summary.SummaryRoute
 
@@ -21,7 +24,7 @@ import com.example.healthbuddy.presentation.summary.SummaryRoute
 fun ExerciseApp(
     navController: NavHostController,
     onFinishActivity: () -> Unit,
-    viewModel: ExerciseViewModel
+    viewModel: ExerciseViewModel,
 ) {
     AppScaffold {
         SwipeDismissableNavHost(
@@ -85,11 +88,6 @@ fun ExerciseApp(
             composable(Goals.route) {
                 ExerciseGoalsRoute(onSet = { navController.popBackStack() })
             }
-            composable(Sleep.route){
-                //TODO : Create Sleep screen
-            }
         }
     }
 }
-
-val AlwaysOnRoutes = listOf(PreparingExercise.route, Exercise.route)
