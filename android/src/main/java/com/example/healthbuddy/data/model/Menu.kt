@@ -117,7 +117,6 @@ data class Page(
     val totalPages: Int
 )
 
-// Minimal body khi add recipe vào meal
 @JsonClass(generateAdapter = true)
 data class MealRecipeRequest(
     val meal: IdRef,

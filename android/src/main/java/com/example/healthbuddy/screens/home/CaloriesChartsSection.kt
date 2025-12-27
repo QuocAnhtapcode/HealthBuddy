@@ -135,10 +135,10 @@ private fun CaloriesLineChartCard(stats: List<CaloriesStat>) {
 
         // Summary row
         ChartSummaryRow(
-            leftLabel = "Avg eaten",
+            leftLabel = "Trung bình nạp vào",
             leftValue = eaten.average().toFloat(),
             leftUnit = "kcal",
-            rightLabel = "Avg burned",
+            rightLabel = "Trung bình đốt",
             rightValue = burned.average().toFloat(),
             rightUnit = "kcal"
         )
@@ -246,8 +246,8 @@ private fun CaloriesLineChartCard(stats: List<CaloriesStat>) {
                         .padding(10.dp),
                     title = s.date,
                     lines = listOf(
-                        "Eaten: ${s.eatenCalories.toInt()} kcal",
-                        "Burned: ${s.burnedCalories.toInt()} kcal"
+                        "Ăn: ${s.eatenCalories.toInt()} kcal",
+                        "Đốt: ${s.burnedCalories.toInt()} kcal"
                     )
                 )
             }
@@ -283,15 +283,15 @@ private fun CaloriesDetailRowList(stats: List<CaloriesStat>) {
             ) {
                 Text(s.date, color = TextSecondary, fontSize = 11.sp)
                 Spacer(Modifier.height(6.dp))
-                Text("Eaten: ${s.eatenCalories.toInt()} kcal", color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
-                Text("Burn:  ${s.burnedCalories.toInt()} kcal", color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                Text("Ăn: ${s.eatenCalories.toInt()} kcal", color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                Text("Đốt:  ${s.burnedCalories.toInt()} kcal", color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
             }
         }
     }
 }
 
 @Composable
-private fun ChartSummaryRow(
+fun ChartSummaryRow(
     leftLabel: String,
     leftValue: Float,
     leftUnit: String,
@@ -320,7 +320,7 @@ private fun SummaryChip(label: String, value: String, modifier: Modifier = Modif
 }
 
 @Composable
-private fun TooltipCard(
+fun TooltipCard(
     modifier: Modifier = Modifier,
     title: String,
     lines: List<String>
@@ -341,7 +341,7 @@ private fun TooltipCard(
 }
 
 @Composable
-private fun EmptyChartCard(title: String, subtitle: String) {
+fun EmptyChartCard(title: String, subtitle: String) {
     Column(
         modifier = Modifier
             .padding(horizontal = 16.dp)
@@ -701,9 +701,9 @@ private fun MacrosStackedBarChartCard(stats: List<CaloriesStat>) {
 
         // Summary
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            SummaryChip("Avg Protein", "${avgP.toInt()} g", Modifier.weight(1f))
-            SummaryChip("Avg Carbs", "${avgC.toInt()} g", Modifier.weight(1f))
-            SummaryChip("Avg Fat", "${avgF.toInt()} g", Modifier.weight(1f))
+            SummaryChip("Đạm", "${avgP.toInt()} g", Modifier.weight(1f))
+            SummaryChip("Tinh bột", "${avgC.toInt()} g", Modifier.weight(1f))
+            SummaryChip("Chất béo", "${avgF.toInt()} g", Modifier.weight(1f))
         }
 
         Spacer(Modifier.height(10.dp))
@@ -843,7 +843,7 @@ private fun MacrosDetailRowList(stats: List<CaloriesStat>) {
 }
 
 @Composable
-private fun LegendDot(color: Color, label: String) {
+fun LegendDot(color: Color, label: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
             modifier = Modifier

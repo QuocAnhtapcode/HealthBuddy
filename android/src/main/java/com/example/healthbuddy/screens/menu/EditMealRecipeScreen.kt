@@ -42,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil3.compose.AsyncImage
 import com.example.healthbuddy.R
 import com.example.healthbuddy.data.model.MealRecipe
 import com.example.healthbuddy.data.model.MealRecipeIngredient
@@ -250,16 +252,26 @@ fun IngredientEditRow(
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .background(BackgroundDark.copy(alpha = 0.8f)),
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(Color(0xFF262626)),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = mealRecipeIngredient.ingredient.name.firstOrNull()?.uppercase() ?: "",
-                    color = AccentLime,
-                    fontWeight = FontWeight.Bold
-                )
+                if (!mealRecipeIngredient.ingredient.imageUrl.isNullOrBlank()) {
+                    AsyncImage(
+                        model = mealRecipeIngredient.ingredient.imageUrl,
+                        contentDescription = mealRecipeIngredient.ingredient.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Text(
+                        text = mealRecipeIngredient.ingredient.name.take(1).uppercase(),
+                        color = AccentLime,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
             }
 
             Spacer(Modifier.width(12.dp))

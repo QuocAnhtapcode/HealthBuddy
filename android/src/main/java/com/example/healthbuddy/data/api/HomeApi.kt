@@ -2,6 +2,8 @@ package com.example.healthbuddy.data.api
 
 import com.example.healthbuddy.data.model.CaloriesStat
 import com.example.healthbuddy.data.model.CreateRunSessionRequest
+import com.example.healthbuddy.data.model.HealthInfoPage
+import com.example.healthbuddy.data.model.RecipePage
 import com.example.healthbuddy.data.model.RunSession
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -22,5 +24,11 @@ interface HomeApi {
     suspend fun createRunSession(
         @Body createRunSessionRequest: CreateRunSessionRequest
     ): RunSession
+
+    @GET("v1/health-info/all")
+    suspend fun getAllHealthInfo(
+        @Query("page") page: Int = 0,
+        @Query("size") size: Int = 10,
+    ): HealthInfoPage
 
 }

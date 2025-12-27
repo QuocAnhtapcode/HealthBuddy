@@ -39,6 +39,7 @@ fun HomeScreen(
 
         homeViewModel.loadRunHistory()
         homeViewModel.applyRange()
+        homeViewModel.loadHealthInfoHistory()
     }
 
     DisposableEffect(Unit) {
@@ -63,6 +64,14 @@ fun HomeScreen(
             )
 
         }
+
+        item {
+            Spacer(Modifier.height(12.dp))
+            HealthInfoLineChartCard(
+                healthList = ui.healthInfos
+            )
+        }
+
 
         item {
             Spacer(Modifier.height(12.dp))

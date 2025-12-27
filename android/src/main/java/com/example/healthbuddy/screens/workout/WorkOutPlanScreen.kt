@@ -68,6 +68,9 @@ import com.example.healthbuddy.ui.theme.LavenderBand
 import com.example.healthbuddy.ui.theme.SurfaceDark
 import com.example.healthbuddy.ui.theme.TextPrimary
 import com.example.healthbuddy.ui.theme.TextSecondary
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -341,6 +344,11 @@ private fun TodayWorkoutStatusHeader(
         targetValue = ratioRaw.coerceIn(0f, 1f),
         label = "Tiến độ tập luyện"
     )
+    val today = remember {
+        val localeVi = Locale("vi", "VN")
+        LocalDate.now()
+            .format(DateTimeFormatter.ofPattern("EEEE, dd MMM", localeVi))
+    }
 
     Column(
         modifier = Modifier
@@ -348,14 +356,7 @@ private fun TodayWorkoutStatusHeader(
             .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp)
     ) {
         Text(
-            text = "Lịch tập hôm nay",
-            color = AccentLime,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.SemiBold
-        )
-        Text(
-            text = session.planSession.sessionDayOfWeek.lowercase()
-                .replaceFirstChar { it.titlecase() },
+            text = today,
             color = TextPrimary,
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold
@@ -393,7 +394,7 @@ private fun TodayWorkoutStatusHeader(
 
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = userActivityLevel.replaceFirstChar { it.titlecase() },
+                        text = mapActivityLevelVi(userActivityLevel),
                         color = TextPrimary,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold
@@ -419,6 +420,14 @@ private fun TodayWorkoutStatusHeader(
                 )
             }
         }
+    }
+}
+fun mapActivityLevelVi(level: String): String {
+    return when (level.lowercase()) {
+        "beginner" -> "Người mới"
+        "intermediate" -> "Trung cấp"
+        "advanced" -> "Nâng cao"
+        else -> level
     }
 }
 

@@ -22,6 +22,11 @@ data class HealthInfoRequest(
 )
 
 @JsonClass(generateAdapter = true)
+data class HealthInfoPage(
+    val content: List<HealthInfo>,
+    val page: Page
+)
+@JsonClass(generateAdapter = true)
 data class ErrorDetail(
     val detail: String
 )

@@ -76,7 +76,7 @@ import com.example.healthbuddy.ui.theme.TextPrimary
 import com.example.healthbuddy.ui.theme.TextSecondary
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
+import java.util.Locale
 
 @Composable
 fun MenuTodayScreen(
@@ -242,9 +242,11 @@ fun TodayHeader(
     onAddByAI: () -> Unit
 ) {
     val today = remember {
+        val localeVi = Locale("vi", "VN")
         LocalDate.now()
-            .format(DateTimeFormatter.ofPattern("EEEE, dd MMM"))
+            .format(DateTimeFormatter.ofPattern("EEEE, dd MMM", localeVi))
     }
+
 
     var showAddOptions by remember { mutableStateOf(false) }
 
@@ -258,20 +260,12 @@ fun TodayHeader(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Text(
-                    text = "Today",
-                    color = AccentLime,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Text(
-                    text = today,
-                    color = TextPrimary,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            Text(
+                text = today,
+                color = TextPrimary,
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
+            )
 
             Icon(
                 painter = painterResource(R.drawable.ic_add),
@@ -480,7 +474,7 @@ private fun TodaySummaryCard(menu: Menu) {
                 Text(
                     text = "Calo hôm nay",
                     color = TextPrimary,
-                    fontSize = 12.sp
+                    fontSize = 14.sp
                 )
                 Spacer(Modifier.height(4.dp))
                 Row(verticalAlignment = Alignment.Bottom) {
@@ -555,12 +549,12 @@ fun MacroLine(
         Text(
             text = label,
             color = TextPrimary,
-            fontSize = 10.sp
+            fontSize = 11.sp
         )
         Text(
             text = "${actual.toInt()}/${target.toInt()} g",
             color = TextPrimary,
-            fontSize = 10.sp,
+            fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold
         )
     }

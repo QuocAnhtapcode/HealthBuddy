@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.healthbuddy.common.DataPaths
 import com.example.healthbuddy.data.model.CaloriesStat
 import com.example.healthbuddy.data.model.CreateRunSessionRequest
+import com.example.healthbuddy.data.model.HealthInfo
 import com.example.healthbuddy.data.model.RunSession
 import com.example.healthbuddy.data.model.WatchCaloriesStat
 import com.example.healthbuddy.data.repo.HomeRepository
@@ -20,6 +21,7 @@ import com.google.android.gms.wearable.PutDataMapRequest
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.LocalDate
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,22 +36,30 @@ data class CaloriesRange(
 )
 
 data class HomeUiState(
+    // ---------- Calories ----------
     val loadingStats: Boolean = false,
     val caloriesStats: List<CaloriesStat> = emptyList(),
     val statsError: String? = null,
+
     val range: CaloriesRange = CaloriesRange(
-        startDate = java.time.LocalDate.now().minusDays(6).toString(),
-        endDate = java.time.LocalDate.now().toString()
+        startDate = LocalDate.now().minusDays(6).toString(),
+        endDate = LocalDate.now().toString()
     ),
     val chartMode: CaloriesChartMode = CaloriesChartMode.LINE_EATEN_BURNED,
 
-    // watch -> server
+    // ---------- Run ----------
     val latestRun: RunSession? = null,
     val runHistory: List<RunSession> = emptyList(),
     val loadingRunHistory: Boolean = false,
     val uploadingRun: Boolean = false,
-    val runError: String? = null
+    val runError: String? = null,
+
+    // ---------- HealthInfo ----------
+    val loadingHealth: Boolean = false,
+    val healthInfos: List<HealthInfo> = emptyList(),
+    val healthError: String? = null
 )
+
 private val moshi = Moshi.Builder().build()
 private val watchCaloriesAdapter =
     moshi.adapter<List<WatchCaloriesStat>>(
@@ -83,14 +93,51 @@ class HomeViewModel @Inject constructor(
         dataClient.removeListener(this)
     }
 
-    /** gọi khi vào Home để có lịch sử từ server */
+    fun loadHealthInfoHistory(
+        page: Int = 0,
+        size: Int = 10
+    ) {
+        viewModelScope.launch {
+            _ui.update {
+                it.copy(
+                    loadingHealth = true,
+                    healthError = null
+                )
+            }
+
+            repository.getAllHealthInfo(page, size)
+                .onSuccess { pageResult ->
+                    val sorted = pageResult.content
+                        .filter { it.createdDate != null }
+                        .sortedBy {
+                            LocalDate.parse(it.createdDate!!.substring(0,10))
+                        }
+
+                    _ui.update {
+                        it.copy(
+                            loadingHealth = false,
+                            healthInfos = sorted,
+                            healthError = null
+                        )
+                    }
+                }
+                .onFailure { e ->
+                    _ui.update {
+                        it.copy(
+                            loadingHealth = false,
+                            healthError = e.message ?: "Load health info failed"
+                        )
+                    }
+                }
+        }
+    }
+
     fun loadRunHistory() {
         viewModelScope.launch {
             _ui.update { it.copy(loadingRunHistory = true, runError = null) }
 
             repository.getRunSessions()
                 .onSuccess { list ->
-                    // sort mới nhất lên đầu (nếu server chưa sort)
                     val sorted = list.sortedByDescending { it.timestampMillis }
                     sorted.forEach { sentTimestamps.add(it.timestampMillis) }
 
