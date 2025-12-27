@@ -257,16 +257,10 @@ private fun CaloriesLineChartCard(stats: List<CaloriesStat>) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             LegendDot(color = AccentLime, label = "Nạp vào")
             LegendDot(color = LavenderBand, label = "Tiêu thụ")
-            if (selectedIndex != null) {
-                Text("• Chạm để xem chi tiết", color = TextSecondary, fontSize = 12.sp)
-            } else {
-                Text("• Chạm vào chart để hiện tooltip", color = TextSecondary, fontSize = 12.sp)
-            }
         }
 
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(10.dp))
 
-        // Detailed list horizontal
         CaloriesDetailRowList(stats = stats)
     }
 }
@@ -673,7 +667,7 @@ private fun NetCaloriesBarChartCard(stats: List<CaloriesStat>) {
         }
 
         Spacer(Modifier.height(8.dp))
-        Text("Dương = dư thừa, Âm = thâm hụt • Chạm để xem", color = TextSecondary, fontSize = 12.sp)
+        Text("Dương = dư thừa, Âm = thâm hụt", color = TextSecondary, fontSize = 12.sp)
 
         Spacer(Modifier.height(12.dp))
         CaloriesDetailRowList(stats = stats)

@@ -5,26 +5,23 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.healthbuddy.ui.theme.AccentLime
 import com.example.healthbuddy.ui.theme.BackgroundDark
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel) {
+fun HomeScreen(
+    homeViewModel: HomeViewModel,
+    onOpenRunHistory:() -> Unit
+) {
     val ui by homeViewModel.ui.collectAsState()
 
     // load stats: lấy 7 ngày gần nhất
@@ -69,26 +66,10 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
 
         item {
             Spacer(Modifier.height(12.dp))
-            RunFromWatchSection(latest = ui.latestRun)
-        }
-
-        item {
-            Spacer(Modifier.height(10.dp))
-            Text(
-                text = "Lịch sử vận động từ đồng hồ",
-                color = AccentLime,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(horizontal = 16.dp)
+            LatestRunSection(
+                latest = ui.latestRun,
+                onOpenHistory = onOpenRunHistory
             )
-            Spacer(Modifier.height(8.dp))
         }
-
-        items(ui.runHistory, key = { it.timestampMillis }) { run ->
-            RunSessionCard(run)
-            Spacer(Modifier.height(10.dp))
-        }
-
-        item { Spacer(Modifier.height(18.dp)) }
     }
 }

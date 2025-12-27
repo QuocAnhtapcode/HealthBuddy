@@ -58,6 +58,7 @@ import com.example.healthbuddy.screens.goal.ChoosePlanScreen
 import com.example.healthbuddy.screens.goal.GoalViewModel
 import com.example.healthbuddy.screens.home.HomeScreen
 import com.example.healthbuddy.screens.home.HomeViewModel
+import com.example.healthbuddy.screens.home.RunHistoryScreen
 import com.example.healthbuddy.screens.menu.EditMealRecipeScreen
 import com.example.healthbuddy.screens.menu.MenuTodayScreen
 import com.example.healthbuddy.screens.menu.MenuViewModel
@@ -496,8 +497,26 @@ fun MainScreenGraph(
             modifier = Modifier.padding(inner)
         ) {
 
-            composable(Tab.Home.route) {
-                HomeScreen(homeViewModel=homeViewModel)
+            navigation(
+                startDestination = "home/chart",
+                route = Tab.Home.route
+            ) {
+
+                composable("home/chart") {
+                    HomeScreen(
+                        homeViewModel = homeViewModel,
+                        onOpenRunHistory = {
+                            tabNav.navigate("home/run-history")
+                        }
+                    )
+                }
+
+                composable("home/run-history") {
+                    RunHistoryScreen(
+                        homeViewModel = homeViewModel,
+                        onBack = { tabNav.popBackStack() }
+                    )
+                }
             }
 
             navigation(
