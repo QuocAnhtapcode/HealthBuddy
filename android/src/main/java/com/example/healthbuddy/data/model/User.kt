@@ -45,3 +45,15 @@ data class User(
     val roles: List<Role> = emptyList(),
     val userPlans: List<UserPlan> = emptyList()
 )
+
+@JsonClass(generateAdapter = true)
+data class Role(
+    val id: Int,
+    val role: String,
+    val permissions: List<UserPermission> = emptyList()
+)
+@JsonClass(generateAdapter = true)
+data class UserPermission(
+    val id: Long,
+    val permission: String
+)
